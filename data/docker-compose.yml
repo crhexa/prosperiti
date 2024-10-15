@@ -1,8 +1,6 @@
-version: '3.8'
-
 services:
-  postgres:
-    image: postgres:14
+  pgvector:
+    image: pgvector/pgvector:0.7.4-pg17
     container_name: prosperiti_pg
     environment:
       POSTGRES_USER: admin
@@ -24,7 +22,7 @@ services:
     ports:
       - "8080:80"
     depends_on:
-      - postgres
+      - pgvector
 
 volumes:
   app_data:

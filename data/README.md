@@ -14,5 +14,5 @@
     - General:
         - Name: prosperiti
     - Connection:
-        - Host name/address: postgres
+        - Host name/address: pgvector
         - Password: password
