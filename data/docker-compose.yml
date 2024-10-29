@@ -1,6 +1,8 @@
 services:
   pgvector:
-    image: pgvector/pgvector:0.7.4-pg17
+    build:
+      context: .
+      dockerfile: Dockerfile.pgvector
     container_name: prosperiti_pg
     environment:
       POSTGRES_USER: admin
@@ -9,9 +11,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      # Note: if the app_data volume already exists, initialization is skipped.
       - app_data:/var/lib/postgresql/data
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 
   pgadmin:
     image: dpage/pgadmin4
