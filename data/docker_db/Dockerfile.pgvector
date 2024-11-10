@@ -10,5 +10,4 @@ RUN apt-get update && \
     apt-get install -y postgresql-contrib && \
     rm -rf /var/lib/apt/lists/*
 
-COPY extensions.sql /docker-entrypoint-initdb.d/
-COPY init.sql /docker-entrypoint-initdb.d/
+ADD scripts /docker-entrypoint-initdb.d/
