@@ -2,11 +2,15 @@
 
 ## Requirements:
 
+- Linux/MacOS
+- Conda
 - Docker Desktop
 
 ## Setup:
 
-1. Run `$ docker compose up`. 
+Docker Containers:
+
+1. Inside `docker_db`, run `docker compose up`. 
 2. Access pgadmin at `http://localhost:8080` and login with:
     - Email: admin@admin.com
     - Password: password
@@ -16,3 +20,7 @@
     - Connection:
         - Host name/address: pgvector
         - Password: password
+
+Python Development:
+
+1. Make `install.sh` executable and run it.
