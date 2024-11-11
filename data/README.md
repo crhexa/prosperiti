@@ -10,7 +10,7 @@
 
 Docker Containers:
 
-1. Inside `docker_db`, run `docker compose up`. 
+1. Inside `docker_db` run `docker compose up`. 
 2. Access pgadmin at `http://localhost:8080` and login with:
     - Email: admin@admin.com
     - Password: password
