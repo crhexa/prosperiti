@@ -1,4 +1,4 @@
-import './App.css'
+import './App.css';
 import { useState } from 'react';
 
 function App() {
@@ -6,19 +6,20 @@ function App() {
   const [serverResponse, setServerResponse] = useState('');
 
   const handleSubmit = async (event) => {
-    event.preventDefault(); 
+    event.preventDefault();
 
     try {
-      const response = await fetch('/api/process-input', {
+      const response = await fetch('http://localhost:3000/api/process-input', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userInput: userInput }), 
+        body: JSON.stringify({ userInput: userInput }),
       });
 
       const data = await response.json();
       setServerResponse(data.response);
     } catch (error) {
       console.error('Error:', error);
+      setServerResponse('Error connecting to server');
     }
   };
 
@@ -36,10 +37,10 @@ function App() {
           />
           <button type="submit">Submit</button>
         </form>
-        {serverResponse && <div>{serverResponse}</div>} {}
+        {serverResponse && <div>{serverResponse}</div>}
       </div>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
