@@ -26,7 +26,7 @@ function App() {
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
-    document.body.classList.toggle('dark-mode', !darkMode);
+    document.body.classList.toggle('dark-mode', darkMode);
   };
 
   return (
