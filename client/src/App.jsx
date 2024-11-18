@@ -5,6 +5,7 @@ function App() {
   const [userInput, setUserInput] = useState('');
   const [budget, setBudget] = useState(0);
   const [serverResponse, setServerResponse] = useState('');
+  const [darkMode, setDarkMode] = useState(true);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -23,6 +24,11 @@ function App() {
     }
   };
 
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+    document.body.classList.toggle('dark-mode', !darkMode);
+  };
+
   return (
     <div>
       <h1>Prosperiti</h1>
@@ -37,11 +43,14 @@ function App() {
             onChange={(e) => setUserInput(e.target.value)} 
           />
           <h3><i>On a budget of:</i></h3>
-          <input type="number" id="budget" name="budget" min="0" max="100000" onChange={(e) => setBudget(e.target.value)}></input>
-          <br></br><button type="submit">Submit</button>
+          <input type="number" id="budget" name="budget" min="0" max="100000" onChange={(e) => setBudget(e.target.value)} />
+          <br /><button type="submit">Submit</button>
         </form>
         {serverResponse && <div className="response">{serverResponse}</div>}
       </div>
+      <button className="toggle-button" onClick={toggleDarkMode}>
+        {darkMode ? '☾' : '☼'}
+      </button>
     </div>
   );
 }

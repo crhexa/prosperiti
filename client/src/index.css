@@ -6,11 +6,18 @@
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
+  background-color: var(--background-light);
+  --primary-color: #4a90e2;
+  --background-light: #f4f6f8;
+  --background-dark: #1e1e1e;
+  --text-light: #333;
+  --text-dark: #f4f4f4;
+  --card-light: #ffffff;
+  --card-dark: #2b2b2b;
+  --input-light: #f9f9f9;
+  --input-dark: #3a3a3a;
+  --response-light: #f4f4f9;
+  --response-dark: #333;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -32,6 +39,11 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+}
+
+body.dark-mode {
+  background-color: var(--background-dark);
+  color: var(--text-dark);
 }
 
 h1 {

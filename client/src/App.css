@@ -34,21 +34,99 @@
 }
 
 .card {
-  padding: 2em;
+  background-color: var(--card-light);
+  max-width: 500px;
+  width: 100%;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin: 20px;
+  transition: background-color 0.3s ease;
 }
 
-.read-the-docs {
-  color: #888;
+body.dark-mode .card {
+  background-color: var(--card-dark);
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
 }
+
+#user-search-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+}
+
+input[type="text"], input[type="number"] {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-sizing: border-box;
+  background-color: var(--input-light);
+  color: var(--text-light);
+  transition: all 0.3s ease;
+}
+
+body.dark-mode input[type="text"], body.dark-mode input[type="number"] {
+  background-color: var(--input-dark);
+  color: var(--text-dark);
+  border: 1px solid #555;
+}
+
+input[type="text"]:focus, input[type="number"]:focus {
+  border-color: var(--primary-color);
+  outline: none;
+}
+
+button {
+  padding: 12px 20px;
+  background-color: var(--primary-color);
+  color: #fff;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #357abd;
+}
+
 
 .response {
-  border: 1px solid #ccc;
-  padding: 10px;
-  margin-top: 15px;
-  background-color: #f9f9f9;
+  margin-top: 20px;
+  padding: 15px;
+  background-color: var(--response-light);
+  border-left: 4px solid var(--primary-color);
+  font-size: 16px;
+  color: var(--text-light);
   border-radius: 5px;
-  width: 100%;
-  box-sizing: border-box;
-  color: #333;
-  min-height: 40px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body.dark-mode .response {
+  background-color: var(--response-dark);
+  color: var(--text-dark);
+}
+
+.toggle-button {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  padding: 8px 15px;
+  background-color: var(--primary-color);
+  color: #fff;
+  font-size: 14px;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.toggle-button:hover {
+  background-color: #357abd;
 }
