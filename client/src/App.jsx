@@ -6,7 +6,8 @@ function App() {
   const [budget, setBudget] = useState(0);
   const [serverResponse, setServerResponse] = useState('');
   const [darkMode, setDarkMode] = useState(true);
-
+  const [messages, setMessage] = useState(['']
+)
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -30,25 +31,27 @@ function App() {
   };
 
   return (
-    <div>
+    <div id="app-main">
       <h1>Prosperiti</h1>
       <h2>AI Personal Planner Assistant</h2>
       <div className="card">
-        <h3><i>I'm looking for:</i></h3>
         <form id="user-search-form" onSubmit={handleSubmit}>
+          <label htmlFor="user-input-entry"><i>I'm looking for:</i></label >
           <input 
             type="text" 
             id="user-input-entry" 
             value={userInput}
             onChange={(e) => setUserInput(e.target.value)} 
           />
-          <h3><i>On a budget of:</i></h3>
+          <label htmlFor='budget'><i>On a budget of:</i></label >
           <input type="number" id="budget" name="budget" min="0" max="100000" onChange={(e) => setBudget(e.target.value)} />
-          <br /><button type="submit">Submit</button>
+          <br /><button type="submit">Search</button>
         </form>
-        {serverResponse && <div className="response">{serverResponse}</div>}
+        <span id='response'>
+          {serverResponse && <div className="response">{serverResponse}</div>}
+        </span>
       </div>
-      <button className="toggle-button" onClick={toggleDarkMode}>
+      <button className="toggle-themes-button" onClick={toggleDarkMode}>
         {darkMode ? '☾' : '☼'}
       </button>
     </div>
