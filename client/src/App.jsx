@@ -6,7 +6,7 @@ function App() {
   const [budget, setBudget] = useState(0);
   const [serverResponse, setServerResponse] = useState("");
   const [darkMode, setDarkMode] = useState(true);
-  const [locations, setLocations] = useState([]); // Stores multiple locations
+  const [locations, setLocations] = useState([]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -20,7 +20,7 @@ function App() {
 
       const data = await response.json();
       setServerResponse(data.response);
-      setLocations(data.locations || []); // Expecting multiple locations
+      setLocations(data.locations || []);
     } catch (error) {
       console.error("Error:", error);
     }
@@ -94,6 +94,7 @@ function App() {
         {locations.map((location, index) => (
           <div key={index} className="map-container">
             <h3>{location.name}</h3>
+            <p className="location-description">{location.description}</p>
             <div id={`map-${index}`} style={{ width: "100%", height: "400px" }}></div>
           </div>
         ))}

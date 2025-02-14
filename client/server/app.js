@@ -18,19 +18,28 @@ app.post("/api/process-input", async (req, res) => {
     const budget = req.body.budget;
   
     const defaultLocations = [
-      "Planet Fitness, Hoboken, NJ",
-      "Crunch Gym, Hoboken, NJ",
-      "Fitness Factory, Hoboken, NJ",
-    ];
+        {
+          name: "Planet Fitness, Hoboken, NJ",
+          description: "24/7 access gym that, with memberships starting at $15/mo, easily fitting your budget",
+        },
+        {
+          name: "Crunch Fitness, Hoboken, NJ",
+          description: "More premium option, with memberships starting at $93.75/mo, stretching your budget a bit more",
+        },
+        {
+          name: "Fitness Factory, Hoboken, NJ",
+          description: "A mid-range option, with memberships starting at $59.99/mo",
+        },
+      ];
   
     try {
       let locations = [];
   
-      for (const location of defaultLocations) {
+      for (const loc of defaultLocations) {
         const geocodeResponse = await axios.get(
           "https://maps.googleapis.com/maps/api/geocode/json",
           {
-            params: { address: location, key: API_KEY },
+            params: { address: loc.name, key: API_KEY },
           }
         );
   
@@ -40,6 +49,7 @@ app.post("/api/process-input", async (req, res) => {
             name: locationData.formatted_address,
             lat: locationData.geometry.location.lat,
             lng: locationData.geometry.location.lng,
+            description: loc.description,
           });
         }
       }
@@ -53,6 +63,7 @@ app.post("/api/process-input", async (req, res) => {
       res.status(500).json({ error: "Failed to fetch location data" });
     }
   });
+  
   
   
 
