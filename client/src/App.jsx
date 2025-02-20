@@ -1,4 +1,4 @@
-import "./App.css";
+import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 
 function App() {
@@ -59,50 +59,77 @@ function App() {
   };
 
   return (
-    <div id="app-main">
-      <h1>Prosperiti</h1>
-      <h2>AI Personal Planner Assistant</h2>
-      <div className="card">
-        <form id="user-search-form" onSubmit={handleSubmit}>
-          <label htmlFor="user-input-entry">
-            <i>I'm looking for:</i>
-          </label>
-          <input
-            type="text"
-            id="user-input-entry"
-            value={userInput}
-            onChange={(e) => setUserInput(e.target.value)}
-          />
-          <label htmlFor="budget">
-            <i>On a budget of:</i>
-          </label>
-          <input
-            type="number"
-            id="budget"
-            name="budget"
-            min="0"
-            max="100000"
-            onChange={(e) => setBudget(e.target.value)}
-          />
-          <br />
-          <button type="submit">Search</button>
-        </form>
-        <span id="response">
-          {serverResponse && <div className="response">{serverResponse}</div>}
-        </span>
+    <div
+  id="app-main"
+  className="flex flex-col items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-white transition-colors duration-300"
+>
+  <button
+    className="absolute top-4 left-4 bg-gray-800 text-white p-2 rounded-full shadow-lg hover:bg-gray-700 transition"
+    onClick={toggleDarkMode}
+  >
+    {darkMode ? "☾" : "☼"}
+  </button>
 
-        {locations.map((location, index) => (
-          <div key={index} className="map-container">
-            <h3>{location.name}</h3>
-            <p className="location-description">{location.description}</p>
-            <div id={`map-${index}`} style={{ width: "100%", height: "400px" }}></div>
-          </div>
-        ))}
-      </div>
-      <button className="toggle-themes-button" onClick={toggleDarkMode}>
-        {darkMode ? "☾" : "☼"}
+  <h1 className="text-4xl font-bold mt-8">Prosperiti</h1>
+  <h2 className="text-xl mb-6">AI Personal Planner Assistant</h2>
+
+  <div className="bg-white dark:bg-gray-800 max-w-md w-full p-8 rounded-lg shadow-lg m-5 transition-colors duration-300">
+    <form
+      id="user-search-form"
+      onSubmit={handleSubmit}
+      className="flex flex-col gap-4"
+    >
+      <label htmlFor="user-input-entry" className="font-medium text-gray-700 dark:text-gray-300">
+        <i>I'm looking for:</i>
+      </label>
+      <input
+        type="text"
+        id="user-input-entry"
+        value={userInput}
+        onChange={(e) => setUserInput(e.target.value)}
+        className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+      />
+
+      <label htmlFor="budget" className="font-medium text-gray-700 dark:text-gray-300">
+        <i>On a budget of:</i>
+      </label>
+      <input
+        type="number"
+        id="budget"
+        name="budget"
+        min="0"
+        max="100000"
+        onChange={(e) => setBudget(e.target.value)}
+        className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+      />
+
+      <button
+        type="submit"
+        className="w-full bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600 transition font-semibold"
+      >
+        Search
       </button>
-    </div>
+    </form>
+
+    {serverResponse && (
+      <div className="mt-4 p-3 bg-green-100 dark:bg-green-800 text-green-700 dark:text-green-300 rounded-lg border-l-4 border-green-500">
+        {serverResponse}
+      </div>
+    )}
+
+    {locations.map((location, index) => (
+      <div key={index} className="mt-6">
+        <h3 className="text-lg font-semibold">{location.name}</h3>
+        <p className="text-gray-600 dark:text-gray-300 mb-2">{location.description}</p>
+        <div
+          id={`map-${index}`}
+          className="w-full h-64 bg-gray-200 dark:bg-gray-700 rounded-lg"
+        ></div>
+      </div>
+    ))}
+  </div>
+</div>
+
   );
 }
 

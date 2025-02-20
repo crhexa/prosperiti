@@ -63,9 +63,6 @@ app.post("/api/process-input", async (req, res) => {
       res.status(500).json({ error: "Failed to fetch location data" });
     }
   });
-  
-  
-  
 
 
 app.listen(port, () => {
