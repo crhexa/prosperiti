@@ -1,2 +1,3 @@
 haystack-ai
-ollama-haystack
+pgvector-haystack
+fastapi[standard]

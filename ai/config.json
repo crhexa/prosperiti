@@ -1,0 +1,6 @@
+{
+    "version": "v0.1",
+    "checkpoint": "gpt-4o-mini-2024-07-18",
+    "embedding_model": "all-MiniLM-L6-v2",
+    "embedding_dimension": 384
+}
