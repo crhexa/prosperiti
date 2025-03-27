@@ -39,7 +39,7 @@ app.post("/api/process-input", async (req, res) => {
         const geocodeResponse = await axios.get(
           "https://maps.googleapis.com/maps/api/geocode/json",
           {
-            params: { address: loc.name, key: API_KEY },
+            params: { address: loc.name, key: process.env.GOOGLE_MAPS_API_KEY },
           }
         );
   
