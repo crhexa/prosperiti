@@ -1,7 +1,7 @@
 import { Navbar, NavbarBrand, NavbarCollapse, NavbarLink, Button, NavbarToggle } from 'flowbite-react';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate from react-router-dom
 
-export default function NavbarComponent() {
+export default function NavbarD() {
   const navigate = useNavigate(); // Hook to handle navigation
 
   const handleSignUp = () => {
@@ -13,7 +13,7 @@ export default function NavbarComponent() {
   };
 
   return (
-    <Navbar fluid rounded className="max-w-screen-xl mx-auto px-6">
+    <Navbar fluid rounded className="max-w-screen-xl mx-auto px-6 mb-20">
       <NavbarBrand>
         <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">
           Prosperiti
@@ -25,11 +25,11 @@ export default function NavbarComponent() {
         <NavbarToggle />
       </div>
       <NavbarCollapse>
-        <NavbarLink href="#" active>
+        <NavbarLink href="/" active>
           Home
         </NavbarLink>
         <NavbarLink href="/about">About</NavbarLink>
-        <NavbarLink href="#">Contact</NavbarLink>
+        <NavbarLink href="/contact">Contact</NavbarLink>
       </NavbarCollapse>
     </Navbar>
   );
