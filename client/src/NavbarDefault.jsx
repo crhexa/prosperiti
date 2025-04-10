@@ -13,7 +13,7 @@ export default function NavbarD() {
   };
 
   return (
-    <Navbar fluid rounded className="max-w-screen-xl mx-auto px-6 mb-20">
+    <Navbar fluid rounded className="max-w-screen-xl mx-auto px-6 mb-2">
       <NavbarBrand>
         <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">
           Prosperiti
