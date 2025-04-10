@@ -42,7 +42,6 @@ export default function Signup() {
       console.log(err);
     }
   };
-  
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
