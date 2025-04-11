@@ -1,0 +1,14 @@
+# Dockerfile.pgvector
+
+FROM pgvector/pgvector:0.7.4-pg17
+
+ENV POSTGRES_USER=admin
+ENV POSTGRES_PASSWORD=password
+ENV POSTGRES_DB=prosperiti_db
+
+RUN apt-get update && \
+    apt-get install -y postgresql-contrib && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN mkdir -p /docker-entrypoint-initdb.d/
+ADD scripts /docker-entrypoint-initdb.d/
