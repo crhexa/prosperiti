@@ -3,4 +3,4 @@
 .python-version
 logs
 node_modules
-__pycache__
+__pycache__.env

@@ -1,27 +1,44 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 function App() {
   const [userInput, setUserInput] = useState("");
   const [budget, setBudget] = useState(0);
+  const [userAddress, setUserAddress] = useState("");
+  const [searchArea, setSearchArea] = useState(10);
   const [serverResponse, setServerResponse] = useState("");
   const [darkMode, setDarkMode] = useState(true);
   const [locations, setLocations] = useState([]);
+  const [selectedIndex, setSelectedIndex] = useState(null);
+
+  const mapRef = useRef(null);
+  const markersRef = useRef([]);
+  const selectedMarkerRef = useRef(null);
+  const searchCircleRef = useRef(null);
+
+  const defaultIcon = "http://maps.google.com/mapfiles/ms/icons/red-dot.png";
+  const selectedIcon = "http://maps.google.com/mapfiles/ms/icons/blue-dot.png";
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
     try {
       const response = await fetch("http://localhost:3000/api/process-input", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userInput, budget }),
+        body: JSON.stringify({ userInput, budget, userAddress, searchArea }),
       });
 
       const data = await response.json();
-      setServerResponse(data.response);
+
+      if (!response.ok) {
+        throw new Error(data.error || "Server returned an error.");
+      }
+
+      setServerResponse(data.response || "No response message.");
       setLocations(data.locations || []);
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Fetch error:", error);
+      setServerResponse(`Error: ${error.message}`);
+      setLocations([]);
     }
   };
 
@@ -32,103 +49,226 @@ function App() {
 
   useEffect(() => {
     if (locations.length > 0) {
-      locations.forEach((location, index) => {
-        renderMap(location.lat, location.lng, `map-${index}`);
-      });
+      renderMap(locations);
     }
   }, [locations]);
 
-  const renderMap = (lat, lng, mapId) => {
+  useEffect(() => {
+    if (searchCircleRef.current) {
+      searchCircleRef.current.setRadius(parseFloat(searchArea) * 1000);
+    }
+  }, [searchArea]);
+
+  const renderMap = (locations) => {
     if (!window.google || !window.google.maps) {
       console.error("Google Maps API not loaded.");
       return;
     }
 
-    const mapOptions = {
-      center: { lat, lng },
-      zoom: 20,
-    };
-
-    const newMap = new window.google.maps.Map(document.getElementById(mapId), mapOptions);
-
-    new window.google.maps.Marker({
-      position: { lat, lng },
-      map: newMap,
+    const bounds = new window.google.maps.LatLngBounds();
+    const map = new window.google.maps.Map(document.getElementById("map"), {
+      center: locations[0],
+      zoom: 13,
     });
+
+    mapRef.current = map;
+    markersRef.current = [];
+
+    const infoWindow = new window.google.maps.InfoWindow();
+
+    locations.forEach((location, index) => {
+      const marker = new window.google.maps.Marker({
+        position: { lat: location.lat, lng: location.lng },
+        map,
+        title: location.name,
+        icon: defaultIcon,
+        animation: window.google.maps.Animation.DROP,
+      });
+
+      marker.addListener("click", () => {
+        infoWindow.setContent(`
+          <div>
+            <h3>${location.name}</h3>
+            <h3>$${location.price}/mo</h3>
+            <p>${location.description}</p>
+            <p>Distance: ${location.distance}</p>
+          </div>
+        `);
+        infoWindow.open(map, marker);
+        highlightMarker(index);
+      });
+
+      markersRef.current.push(marker);
+      bounds.extend(marker.getPosition());
+    });
+
+    if (userAddress) {
+      const geocoder = new window.google.maps.Geocoder();
+      geocoder.geocode({ address: userAddress }, (results, status) => {
+        if (status === "OK" && results[0]) {
+          const userLatLng = results[0].geometry.location;
+
+          if (searchCircleRef.current) {
+            searchCircleRef.current.setMap(null);
+          }
+
+          const circle = new window.google.maps.Circle({
+            strokeColor: "#4285F4",
+            strokeOpacity: 0.8,
+            strokeWeight: 2,
+            fillColor: "#4285F4",
+            fillOpacity: 0.2,
+            map: map,
+            center: userLatLng,
+            radius: parseFloat(searchArea) * 1000,
+          });
+
+          searchCircleRef.current = circle;
+
+          bounds.extend(userLatLng);
+          map.fitBounds(bounds);
+        } else {
+          console.error("Geocode error for user address:", status);
+        }
+      });
+    } else {
+      map.fitBounds(bounds);
+    }
+  };
+
+  const highlightMarker = (index) => {
+    const marker = markersRef.current[index];
+    const map = mapRef.current;
+
+    if (selectedMarkerRef.current) {
+      selectedMarkerRef.current.setIcon(defaultIcon);
+    }
+
+    marker.setIcon(selectedIcon);
+    selectedMarkerRef.current = marker;
+
+    setSelectedIndex(index);
+
+    if (marker && map) {
+      map.panTo(marker.getPosition());
+      map.setZoom(15);
+      marker.setAnimation(window.google.maps.Animation.BOUNCE);
+      setTimeout(() => {
+        marker.setAnimation(null);
+      }, 1400);
+    }
   };
 
   return (
-    <div
-  id="app-main"
-  className="flex flex-col items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-white transition-colors duration-300"
->
-  <button
-    className="absolute top-4 left-4 bg-gray-800 text-white p-2 rounded-full shadow-lg hover:bg-gray-700 transition"
-    onClick={toggleDarkMode}
-  >
-    {darkMode ? "☾" : "☼"}
-  </button>
-
-  <h1 className="text-4xl font-bold mt-8">Prosperiti</h1>
-  <h2 className="text-xl mb-6">AI Personal Planner Assistant</h2>
-
-  <div className="bg-white dark:bg-gray-800 max-w-md w-full p-8 rounded-lg shadow-lg m-5 transition-colors duration-300">
-    <form
-      id="user-search-form"
-      onSubmit={handleSubmit}
-      className="flex flex-col gap-4"
-    >
-      <label htmlFor="user-input-entry" className="font-medium text-gray-700 dark:text-gray-300">
-        <i>I'm looking for:</i>
-      </label>
-      <input
-        type="text"
-        id="user-input-entry"
-        value={userInput}
-        onChange={(e) => setUserInput(e.target.value)}
-        className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-      />
-
-      <label htmlFor="budget" className="font-medium text-gray-700 dark:text-gray-300">
-        <i>On a budget of:</i>
-      </label>
-      <input
-        type="number"
-        id="budget"
-        name="budget"
-        min="0"
-        max="100000"
-        onChange={(e) => setBudget(e.target.value)}
-        className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-      />
-
+    <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-white transition-colors duration-300">
       <button
-        type="submit"
-        className="w-full bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600 transition font-semibold"
+        className="absolute top-4 left-4 bg-gray-800 text-white p-2 rounded-full shadow-lg hover:bg-gray-700 transition"
+        onClick={toggleDarkMode}
       >
-        Search
+        {darkMode ? "☾" : "☆"}
       </button>
-    </form>
 
-    {serverResponse && (
-      <div className="mt-4 p-3 bg-green-100 dark:bg-green-800 text-green-700 dark:text-green-300 rounded-lg border-l-4 border-green-500">
-        {serverResponse}
+      <h1 className="text-4xl font-bold text-center mt-8">Prosperiti</h1>
+      <h2 className="text-xl text-center mb-6">AI Personal Planner Assistant</h2>
+
+      <div className="flex flex-col items-center">
+        <div className="bg-white dark:bg-gray-800 max-w-md w-full p-8 rounded-lg shadow-lg m-5 transition-colors duration-300">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <label htmlFor="user-input-entry" className="font-medium text-gray-700 dark:text-gray-300">
+              <i>I'm looking for:</i>
+            </label>
+            <input
+              type="text"
+              id="user-input-entry"
+              value={userInput}
+              onChange={(e) => setUserInput(e.target.value)}
+              className="w-full p-3 rounded-lg border bg-gray-100 dark:bg-gray-700"
+            />
+
+            <label htmlFor="budget" className="font-medium text-gray-700 dark:text-gray-300">
+              <i>On a budget of:</i>
+            </label>
+            <input
+              type="number"
+              id="budget"
+              value={budget}
+              onChange={(e) => setBudget(Number(e.target.value))}
+              className="w-full p-3 rounded-lg border bg-gray-100 dark:bg-gray-700"
+            />
+
+            <label htmlFor="address" className="font-medium text-gray-700 dark:text-gray-300">
+              <i>Insert address or zip code:</i>
+            </label>
+            <input
+              type="text"
+              id="address"
+              value={userAddress}
+              onChange={(e) => setUserAddress(e.target.value)}
+              className="w-full p-3 rounded-lg border bg-gray-100 dark:bg-gray-700"
+            />
+
+            <label htmlFor="area" className="font-medium text-gray-700 dark:text-gray-300">
+              <i>Search radius: {searchArea} km</i>
+            </label>
+            <input
+              type="range"
+              id="area"
+              min="0.5"
+              max="100"
+              step="0.5"
+              value={searchArea}
+              onChange={(e) => setSearchArea(parseFloat(e.target.value))}
+              className="w-full"
+            />
+
+            <button
+              type="submit"
+              className="w-full bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600 transition font-semibold"
+            >
+              Search
+            </button>
+          </form>
+
+          {serverResponse && (
+            <div className={`mt-4 p-3 rounded-lg border-l-4 ${
+              serverResponse.startsWith("Error:")
+                ? "bg-red-100 dark:bg-red-800 text-red-700 dark:text-red-300 border-red-500"
+                : "bg-green-100 dark:bg-green-800 text-green-700 dark:text-green-300 border-green-500"
+            }`}>
+              {serverResponse}
+            </div>
+          )}
+        </div>
       </div>
-    )}
 
-    {locations.map((location, index) => (
-      <div key={index} className="mt-6">
-        <h3 className="text-lg font-semibold">{location.name}</h3>
-        <p className="text-gray-600 dark:text-gray-300 mb-2">{location.description}</p>
-        <div
-          id={`map-${index}`}
-          className="w-full h-64 bg-gray-200 dark:bg-gray-700 rounded-lg"
-        ></div>
-      </div>
-    ))}
-  </div>
-</div>
+      {locations.length > 0 && (
+        <div className="flex flex-col lg:flex-row w-full max-w-7xl px-6 pb-10 gap-6">
+          <div className="w-full lg:w-1/3 space-y-4">
+            {locations.map((location, index) => (
+              <div
+                key={index}
+                className={`cursor-pointer p-4 rounded-lg shadow transition ${
+                  selectedIndex === index
+                    ? "bg-blue-50 dark:bg-blue-900 border-2 border-blue-500"
+                    : "bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700"
+                }`}
+                onClick={() => highlightMarker(index)}
+              >
+                <h3 className="text-lg font-semibold">{location.name}</h3>
+                <h3 className="text-lg font-semibold">${location.price}/mo</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-300">{location.description}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-300">Distance: {location.distance} km</p>
 
+              </div>
+            ))}
+          </div>
+
+          <div className="w-full lg:w-2/3 h-[500px]">
+            <div id="map" className="w-full h-full rounded-lg shadow-lg" />
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 
