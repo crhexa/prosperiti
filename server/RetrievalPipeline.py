@@ -1,6 +1,6 @@
 from haystack import Document
 from haystack.document_stores.in_memory import InMemoryDocumentStore
-from GmapWrapper import PlaceRetriever
+from data.GmapWrapper import PlaceRetriever
 
 import logging
 
