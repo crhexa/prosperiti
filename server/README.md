@@ -7,6 +7,9 @@
 - Vector Embedding Model: [all-MiniLM-L6-v2](https://www.sbert.net/docs/sentence_transformer/pretrained_models.html) \(80 MB\)
 - Pipeline Framework: [Haystack](https://github.com/deepset-ai/haystack)
 
+## Setup
+
+Create a `.env` file and set `GMAP_KEY` to a valid Google Maps API key.
 
 ## Start Server
 Run `fastapi dev .\ai\main.py` or `fastapi run .\ai\main.py`.
