@@ -16,7 +16,7 @@ class DataPipeline:
     Members:
     --------
     store : DocumentStore
-    k     : int
+    k     : int (default 10)
 
     Methods:
     --------
@@ -28,24 +28,25 @@ class DataPipeline:
         self.store = InMemoryDocumentStore()
         self.k = k
 
-    def indexPlaces(self, query, location, config={}, batch_size=10):
+    def indexPlaces(self, query, location, radius=1000):
         '''Calls the Google Places API to index queried places at a given location as Haystack Documents.
 
         Params:
         -------
         query    : str
         location : dict[str, float]
-        config   : dict[str, float]
+        radius   : int (default 1000)
 
         Return:
         -------
         docs : list[Document]
         '''
+        # Reset document store
         self.store = InMemoryDocumentStore()
         places = PlaceRetriever()
         docs = []
         n_docs = 0
-        for place in places.getPlaces(query, location):
+        for place in places.getPlaces(query, location, radius):
             loc = place["geometry"]["location"]
             name = place.get("name", "")
             address = place.get("formatted_address", "")
@@ -80,9 +81,10 @@ class DataPipeline:
         -------
         docs : list[Document]
         '''
-        # TODO
+        # Reset document store
         self.store = InMemoryDocumentStore()
         docs = []
+        # TODO
         return docs
 
     def getDocuments(self):
