@@ -61,3 +61,7 @@ class GenerationPipeline:
 
     def import_documents(self):
         pass
+
+
+class ChatHistoryFormatException(Exception):
+    pass
