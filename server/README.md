@@ -13,4 +13,4 @@ Create a `.env` file and set `GMAP_KEY` to a valid Google Maps API key.
 
 ## Start Server
 Set `OPENAI_API_KEY` in environment variables.
-Run `fastapi dev .\ai\main.py` or `fastapi run .\ai\main.py`.
+Run `fastapi dev .\server\main.py`
