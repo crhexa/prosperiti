@@ -14,6 +14,7 @@ function App() {
   const markersRef = useRef([]);
   const selectedMarkerRef = useRef(null);
   const searchCircleRef = useRef(null);
+  const addressInputRef = useRef(null);
 
   const defaultIcon = "http://maps.google.com/mapfiles/ms/icons/red-dot.png";
   const selectedIcon = "http://maps.google.com/mapfiles/ms/icons/blue-dot.png";
@@ -59,6 +60,26 @@ function App() {
     }
   }, [searchArea]);
 
+  useEffect(() => {
+    if (!window.google || !window.google.maps || !addressInputRef.current) return;
+  
+    const autocomplete = new window.google.maps.places.Autocomplete(addressInputRef.current, {
+      types: ['geocode'],
+      componentRestrictions: { country: 'us' },
+    });
+  
+    autocomplete.addListener('place_changed', () => {
+      const place = autocomplete.getPlace();
+      if (place.formatted_address) {
+        setUserAddress(place.formatted_address);
+      } else if (place.name) {
+        setUserAddress(place.name);
+      }
+    });
+    console.log("Autocomplete initialized:", addressInputRef.current);
+  }, []);
+  
+
   const renderMap = (locations) => {
     if (!window.google || !window.google.maps) {
       console.error("Google Maps API not loaded.");
@@ -86,15 +107,6 @@ function App() {
       });
 
       marker.addListener("click", () => {
-        infoWindow.setContent(`
-          <div>
-            <h3>${location.name}</h3>
-            <h3>$${location.price}/mo</h3>
-            <p>${location.description}</p>
-            <p>Distance: ${location.distance}</p>
-          </div>
-        `);
-        infoWindow.open(map, marker);
         highlightMarker(index);
       });
 
@@ -191,7 +203,7 @@ function App() {
             <input
               type="number"
               id="budget"
-              value={budget}
+              value={budget === 0 ? "" : budget}
               onChange={(e) => setBudget(Number(e.target.value))}
               className="w-full p-3 rounded-lg border bg-gray-100 dark:bg-gray-700"
             />
@@ -201,10 +213,13 @@ function App() {
             </label>
             <input
               type="text"
+              name="search_address"
               id="address"
+              ref={addressInputRef}
               value={userAddress}
               onChange={(e) => setUserAddress(e.target.value)}
               className="w-full p-3 rounded-lg border bg-gray-100 dark:bg-gray-700"
+              autoComplete="on"           
             />
 
             <label htmlFor="area" className="font-medium text-gray-700 dark:text-gray-300">
@@ -258,7 +273,6 @@ function App() {
                 <h3 className="text-lg font-semibold">${location.price}/mo</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-300">{location.description}</p>
                 <p className="text-sm text-gray-600 dark:text-gray-300">Distance: {location.distance} km</p>
-
               </div>
             ))}
           </div>

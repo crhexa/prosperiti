@@ -1,5 +1,5 @@
 from typing import Annotated
-from fastapi import FastAPI, Query, Request
+from fastapi import FastAPI, Query, Request, Response, status
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
@@ -10,12 +10,16 @@ import pipeline
 script_path = os.path.dirname(os.path.abspath(__file__))
 favicon_path = os.path.join(script_path, "favicon.ico")
 
+with open(os.path.join(script_path, "config_text.json")) as json_config_text:
+    config_text = json.load(json_config_text)
+
 with open(os.path.join(script_path, "config.json")) as json_config:
     config = json.load(json_config)
     VERSION = config["version"]
     MODEL_NAME = config["checkpoint"]
     EMBED_NAME = config["embedding_model"]
     EMBED_DIMS = config["embedding_dimension"]
+    TOP_K = config["top_k"]
 
 uvicorn_access = logging.getLogger("uvicorn.access")
 uvicorn_access.disabled = True
@@ -23,27 +27,37 @@ logger = logging.getLogger("uvicorn")
 logger.setLevel(logging.getLevelName(logging.DEBUG))
 
 app = FastAPI()
+llm = pipeline.GenerationPipeline(MODEL_NAME, EMBED_NAME, TOP_K, config_text)
 
+
+class Message(BaseModel):
+    role        : str           = Field(description="Expected roles: \"user\", \"system\", and \"assistant\"")
+    content     : str           = Field()
 
 class GenerationRequest(BaseModel):
-    user_prompt : str           = Field(default="What is your name?")
-    tags        : list[str]     = []
+    messages    : list[Message] = []
+    filters     : list[str]     = []
     # user_auth
 
 
 #
 @app.get("/")
 async def root():
-    return {"Version": VERSION}
+    return {"version": VERSION}
 
 
 # /generate/{user_id}
 @app.post("/generate/")
-async def generate(gen_req: Annotated[GenerationRequest, Query()]):
-    return {"response": "hi"}
+async def generate(gen_req: Annotated[GenerationRequest, Query()], response: Response):
+    try:
+        #llm.generate()
+        return {"response": "hello"}
+        
+    except pipeline.ChatHistoryFormatException:
+        response.status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
 
 
-#
+# Adapted from https://github.com/roy-pstr/fastapi-custom-exception-handlers-and-logs
 @app.middleware("http")
 async def log_request_middleware(request: Request, call_next):
     """
