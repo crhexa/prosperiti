@@ -1,4 +1,8 @@
 import { useState, useEffect, useRef } from "react";
+import Chatbox from "./Chatbox.jsx"
+
+const LOC_POST_ADDRESS = 'http://localhost:3000/api/process-input'
+const POST_ADDRESS = 'http://localhost:8000/generate/'
 
 function App() {
   const [userInput, setUserInput] = useState("");
@@ -6,6 +10,7 @@ function App() {
   const [userAddress, setUserAddress] = useState("");
   const [searchArea, setSearchArea] = useState(10);
   const [serverResponse, setServerResponse] = useState("");
+  const [messages, setMessages] = useState([]);
   const [darkMode, setDarkMode] = useState(true);
   const [locations, setLocations] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(null);
@@ -21,24 +26,34 @@ function App() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setMessages((prev) => [...prev, {origin: 'user', message: `I'm looking for ${userInput.trim()} on a budget of ${budget} within ${searchArea}km of ${userAddress.trim()}`}])
+
     try {
-      const response = await fetch("http://localhost:3000/api/process-input", {
+      const response = await fetch(POST_ADDRESS, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userInput, budget, userAddress, searchArea }),
       });
 
+      const loc_response = await fetch(LOC_POST_ADDRESS, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userInput, budget, userAddress, searchArea }),
+      })
+
       const data = await response.json();
+      const loc_data = await loc_response.json()
 
       if (!response.ok) {
         throw new Error(data.error || "Server returned an error.");
       }
 
-      setServerResponse(data.response || "No response message.");
-      setLocations(data.locations || []);
+      setServerResponse(loc_data.response || "No response message.");
+      setMessages((prev) =>  [...prev, {origin: 'server', message: data.response || "No response message."}]);
+      setLocations(loc_data.locations || []);
     } catch (error) {
       console.error("Fetch error:", error);
-      setServerResponse(`Error: ${error.message}`);
+      setMessages((prev) =>  [...prev, {origin: 'server', message: `Error: ${error.message}`}]);
       setLocations([]);
     }
   };
@@ -173,17 +188,13 @@ function App() {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-white transition-colors duration-300">
-      <button
-        className="absolute top-4 left-4 bg-gray-800 text-white p-2 rounded-full shadow-lg hover:bg-gray-700 transition"
-        onClick={toggleDarkMode}
-      >
-        {darkMode ? "☾" : "☆"}
-      </button>
+      {!messages[0] && 
+      <div>
+        <h1 className="text-4xl font-bold text-center mt-8">Prosperiti</h1>
+        <h2 className="text-xl text-center mb-6">AI Personal Planner Assistant</h2>
+      </div>}
 
-      <h1 className="text-4xl font-bold text-center mt-8">Prosperiti</h1>
-      <h2 className="text-xl text-center mb-6">AI Personal Planner Assistant</h2>
-
-      <div className="flex flex-col items-center">
+      <div className="flex justify-center items-start gap-4 m-5 min-h-[500px] max-h-screen">
         <div className="bg-white dark:bg-gray-800 max-w-md w-full p-8 rounded-lg shadow-lg m-5 transition-colors duration-300">
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <label htmlFor="user-input-entry" className="font-medium text-gray-700 dark:text-gray-300">
@@ -254,10 +265,12 @@ function App() {
             </div>
           )}
         </div>
+        
+        {messages[0] && <Chatbox messages={messages}/>}  
       </div>
 
       {locations.length > 0 && (
-        <div className="flex flex-col lg:flex-row w-full max-w-7xl px-6 pb-10 gap-6">
+        <div className="flex justify-center items-center flex-col lg:flex-row w-full max-w-screen px-100 pb-10 gap-6 space-y-6">
           <div className="w-full lg:w-1/3 space-y-4">
             {locations.map((location, index) => (
               <div

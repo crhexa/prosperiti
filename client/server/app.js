@@ -10,7 +10,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static('build'));
 
-const API_KEY = '';
+const API_KEY = process.env.GOOGLE_MAPS_API_KEY;
 
 function getDistanceInKm(lat1, lng1, lat2, lng2) {
   const toRad = (value) => (value * Math.PI) / 180;
