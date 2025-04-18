@@ -1,5 +1,5 @@
 import { Navbar, NavbarBrand, NavbarCollapse, NavbarLink, Button, NavbarToggle } from 'flowbite-react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate from react-router-dom
+import { useNavigate } from 'react-router-dom';
 
 export default function NavbarD() {
   const navigate = useNavigate(); // Hook to handle navigation
@@ -14,7 +14,7 @@ export default function NavbarD() {
 
   return (
     <Navbar fluid rounded className="max-w-screen-xl mx-auto px-6 mb-2">
-      <NavbarBrand>
+      <NavbarBrand href='/'>
         <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">
           Prosperiti
         </span>
@@ -25,8 +25,8 @@ export default function NavbarD() {
         <NavbarToggle />
       </div>
       <NavbarCollapse>
-        <NavbarLink href="/" active>
-          Home
+        <NavbarLink href="/chat">
+          Search
         </NavbarLink>
         <NavbarLink href="/about">About</NavbarLink>
         <NavbarLink href="/contact">Contact</NavbarLink>

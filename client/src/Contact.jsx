@@ -1,7 +1,7 @@
 
 import { Label, TextInput, Textarea } from "flowbite-react";
 
-export function Contact() {
+export default function Contact() {
   return (
     <div className="bg-gray-100">
         <form className="flex max-w-md flex-col gap-4 max-w-screen-lg mx-auto px-6">
