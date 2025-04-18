@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import Chatbox from "./Chatbox.jsx"
 
 const LOC_POST_ADDRESS = 'http://localhost:3000/api/process-input'
-const POST_ADDRESS = 'http://localhost:8000/generate/'
+const AI_POST_ADDRESS = 'http://localhost:8000/generate/'
 
 function App() {
   const [userInput, setUserInput] = useState("");
@@ -29,16 +29,16 @@ function App() {
     setMessages((prev) => [...prev, {origin: 'user', message: `I'm looking for ${userInput.trim()} on a budget of ${budget} within ${searchArea}km of ${userAddress.trim()}`}])
 
     try {
-      const response = await fetch(POST_ADDRESS, {
+      const response = await fetch(AI_POST_ADDRESS, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userInput, budget, userAddress, searchArea }),
+        body: JSON.stringify({role: 'user', content: userInput.trim()}),
       });
 
       const loc_response = await fetch(LOC_POST_ADDRESS, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userInput, budget, userAddress, searchArea }),
+        body: JSON.stringify({ userInput: userInput.trim(), budget, userAddress: userAddress.trim(), searchArea }),
       })
 
       const data = await response.json();

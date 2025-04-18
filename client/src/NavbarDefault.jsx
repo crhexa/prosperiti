@@ -1,11 +1,4 @@
-import {
-  Navbar,
-  NavbarBrand,
-  NavbarCollapse,
-  NavbarLink,
-  Button,
-  NavbarToggle,
-} from 'flowbite-react';
+import { Navbar, NavbarBrand, NavbarCollapse, NavbarLink, Button, NavbarToggle, } from 'flowbite-react';
 import { useNavigate } from 'react-router-dom';
 
 export default function NavbarD() {
