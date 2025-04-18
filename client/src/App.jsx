@@ -26,13 +26,25 @@ function App() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setMessages((prev) => [...prev, {origin: 'user', message: `I'm looking for ${userInput.trim()} on a budget of ${budget} within ${searchArea}km of ${userAddress.trim()}`}])
+    const newMessage = {origin: 'user', message: `I'm looking for ${userInput.trim()} on a budget of ${budget} within ${searchArea}km of ${userAddress.trim()}`}
+    setMessages((prev) => [...prev, newMessage])
+    
+    const fullMessageHistory = [
+      messages.map((m) => ({
+      role: m.origin,
+      content: m.message
+    },
+    {
+      role: newMessage.origin,
+      content: newMessage.message
+    }))]
+    console.log(fullMessageHistory);
 
     try {
       const response = await fetch(AI_POST_ADDRESS, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({role: 'user', content: userInput.trim()}),
+        body: JSON.stringify({messages: [{role:'user', content:userInput.trim()}]}),
       });
 
       const loc_response = await fetch(LOC_POST_ADDRESS, {
