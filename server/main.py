@@ -2,6 +2,7 @@ from typing import Annotated
 from fastapi import FastAPI, Query, Request, Response, status
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
+from fastapi.middleware.cors import CORSMiddleware
 
 import os, json, time
 import http, logging
@@ -56,6 +57,13 @@ async def generate(gen_req: Annotated[GenerationRequest, Query()], response: Res
     except pipeline.ChatHistoryFormatException:
         response.status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
 
+app.add_middleware( #allows CORS
+    CORSMiddleware,
+    allow_origins=["*"],  # replace with frontend domain
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Adapted from https://github.com/roy-pstr/fastapi-custom-exception-handlers-and-logs
 @app.middleware("http")

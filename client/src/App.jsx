@@ -1,5 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 
+//const POST_ADDRESS = 'http://localhost:3000/api/process-input'
+const POST_ADDRESS = 'http://localhost:8000/generate/'
+
 function App() {
   const [userInput, setUserInput] = useState("");
   const [budget, setBudget] = useState(0);
@@ -22,7 +25,7 @@ function App() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await fetch("http://localhost:3000/api/process-input", {
+      const response = await fetch(POST_ADDRESS, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userInput, budget, userAddress, searchArea }),
@@ -35,6 +38,7 @@ function App() {
       }
 
       setServerResponse(data.response || "No response message.");
+      console.log(data.response);
       setLocations(data.locations || []);
     } catch (error) {
       console.error("Fetch error:", error);
@@ -173,13 +177,6 @@ function App() {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-white transition-colors duration-300">
-      <button
-        className="absolute top-4 left-4 bg-gray-800 text-white p-2 rounded-full shadow-lg hover:bg-gray-700 transition"
-        onClick={toggleDarkMode}
-      >
-        {darkMode ? "☾" : "☆"}
-      </button>
-
       <h1 className="text-4xl font-bold text-center mt-8">Prosperiti</h1>
       <h2 className="text-xl text-center mb-6">AI Personal Planner Assistant</h2>
 
