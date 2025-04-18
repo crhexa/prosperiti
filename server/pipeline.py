@@ -22,14 +22,16 @@ class GenerationPipeline:
 
         self.indexing = Pipeline()
         self.indexing.add_component(name="doc_embed", instance=SentenceTransformersDocumentEmbedder(model=embed_name))
-        self.indexing.add_component(name="doc_write", instance=DocumentWriter(document_store=self.db))
+        self.indexing.add_component(name="doc_write", instance=DocumentWriter(document_store=self.db.store))
         self.indexing.connect("doc_embed", "doc_write")
 
         self.pipeline = Pipeline()
         self.pipeline.add_component(name="embed", instance=SentenceTransformersTextEmbedder(model=embed_name))
-        self.pipeline.add_component(name="retrieve", instance=InMemoryEmbeddingRetriever(document_store=self.db, top_k=top_k))
+        self.pipeline.add_component(name="retrieve", instance=InMemoryEmbeddingRetriever(document_store=self.db.store, top_k=top_k))
         self.pipeline.connect("embed.embedding", "retrieve.query_embedding")
         self.client = AsyncOpenAI()
+
+        self.db.indexPlaces("pizza", {"lat": 40.745, "lng": -74.035})
 
 
     async def generate(self, messages: list[Message], filters, threshold):

@@ -41,13 +41,14 @@ async def root():
 # /generate/{user_id}
 @app.post("/generate/")
 async def generate(gen_req: Annotated[GenerationRequest, Query()], response: Response):
+    print(str(gen_req))
     if gen_req.messages[-1].role == "user":
         return {"response": llm.generate(messages=gen_req.messages, threshold=THRESHOLD)}
     else:
         response.status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
 
 
-@app.add_middleware( #allows CORS
+app.add_middleware( #allows CORS
     CORSMiddleware,
     allow_origins=["*"],  # replace with frontend domain
     allow_credentials=True,
