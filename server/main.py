@@ -6,6 +6,7 @@ from pydantic import BaseModel, Field
 import os, json, time
 import http, logging
 import pipeline
+from pydtypes import Message, GenerationRequest
 
 script_path = os.path.dirname(os.path.abspath(__file__))
 favicon_path = os.path.join(script_path, "favicon.ico")
@@ -19,6 +20,7 @@ with open(os.path.join(script_path, "config.json")) as json_config:
     MODEL_NAME = config["checkpoint"]
     EMBED_NAME = config["embedding_model"]
     EMBED_DIMS = config["embedding_dimension"]
+    THRESHOLD = config["threshold"]
     TOP_K = config["top_k"]
 
 uvicorn_access = logging.getLogger("uvicorn.access")
@@ -27,18 +29,7 @@ logger = logging.getLogger("uvicorn")
 logger.setLevel(logging.getLevelName(logging.DEBUG))
 
 app = FastAPI()
-#llm = pipeline.GenerationPipeline(MODEL_NAME, EMBED_NAME, TOP_K, config_text)
-
-
-class Message(BaseModel):
-    role        : str           = Field(description="Expected roles: \"user\", \"system\", and \"assistant\"")
-    content     : str           = Field()
-
-class GenerationRequest(BaseModel):
-    messages    : list[Message] = []
-    filters     : list[str]     = []
-    # user_auth
-
+llm = pipeline.GenerationPipeline(MODEL_NAME, EMBED_NAME, TOP_K, config_text)
 
 #
 @app.get("/")
@@ -49,11 +40,9 @@ async def root():
 # /generate/{user_id}
 @app.post("/generate/")
 async def generate(gen_req: Annotated[GenerationRequest, Query()], response: Response):
-    try:
-        #llm.generate()
-        return {"response": "hello"}
-        
-    except pipeline.ChatHistoryFormatException:
+    if gen_req.messages[-1].role == "user":
+        return {"response": llm.generate(messages=gen_req.messages, threshold=THRESHOLD)}
+    else:
         response.status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
 
 
