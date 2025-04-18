@@ -43,7 +43,7 @@ function App() {
       const response = await fetch(AI_POST_ADDRESS, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({messages: [{role:'user', content:userInput.trim()}]}),
+        body: JSON.stringify({messages: fullMessageHistory}),
       });
 
       const loc_response = await fetch(LOC_POST_ADDRESS, {
