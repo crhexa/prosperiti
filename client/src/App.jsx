@@ -33,11 +33,11 @@ function App() {
       messages.map((m) => ({
       role: m.origin,
       content: m.message
-    },
+    })),
     {
       role: newMessage.origin,
       content: newMessage.message
-    }))]
+    }].flat();
     console.log(fullMessageHistory);
 
     try {
