@@ -11,7 +11,7 @@ from pydtypes import Message
 class GenerationPipeline:
 
     def __init__(self, model: str, embed_name: str, top_k: int, config_text):
-        self.db = DataPipeline()
+        self.db = DataPipeline(embed_name)
         self.config_text = config_text
         self.model = model
         
@@ -20,18 +20,14 @@ class GenerationPipeline:
         self.SYSTEM_PROMPT = config_text["prompts"]["system"]
         self.NO_MATCH_RESPONSE = config_text["other"]["no_match_response"]
 
-        self.indexing = Pipeline()
-        self.indexing.add_component(name="doc_embed", instance=SentenceTransformersDocumentEmbedder(model=embed_name))
-        self.indexing.add_component(name="doc_write", instance=DocumentWriter(document_store=self.db.store))
-        self.indexing.connect("doc_embed", "doc_write")
-
         self.pipeline = Pipeline()
         self.pipeline.add_component(name="embed", instance=SentenceTransformersTextEmbedder(model=embed_name))
         self.pipeline.add_component(name="retrieve", instance=InMemoryEmbeddingRetriever(document_store=self.db.store, top_k=top_k))
         self.pipeline.connect("embed.embedding", "retrieve.query_embedding")
         self.client = AsyncOpenAI()
 
-        self.db.indexPlaces("pizza", {"lat": 40.745, "lng": -74.035})
+        self.pipeline.warm_up()
+        self.db.indexPlaces("pizza places", {"lat": 40.745, "lng": -74.035})
 
 
     async def generate(self, messages: list[Message], filters, threshold):
@@ -40,7 +36,7 @@ class GenerationPipeline:
 
         query = messages[-1].content
 
-        relevant = self.pipeline.run({"embed": {"text": query, "filters": filters}})['retriever']['documents']
+        relevant = self.pipeline.run({"embed": {"text": query}})['retrieve']['documents']
         no_docs = 0
         for doc in relevant:
             if doc.score > threshold:
@@ -51,7 +47,7 @@ class GenerationPipeline:
             return self.config_text["other"]["no_match_response"]
         
         system = [{"role": "system", "content": self.SYSTEM_PROMPT}]
-        user = [{"role": "user", "content": f"{context}\n{query}"}]
+        user = [{"role": "user", "content": f"{context}\n{self.USER_PROMPT}{query}"}]
 
         completion = await self.client.chat.completions.create(
             model=self.model,
@@ -65,11 +61,10 @@ class GenerationPipeline:
 
 def stringify_doc(doc: Document):
     meta = doc.meta
-    string = f"{meta["location"]}\n"
-    string += f"Address: {meta["address"]}\n"       if meta["address"]  == ""   else ""
-    string += f"Price: {str(meta["price"])}\n"      if meta["price"]    == None else ""
-    string += f"Rating: {str(meta["rating"])}\n"    if meta["rating"]   == None else ""
-    string += f"Tags: {str(meta["tags"])}\n"        if meta["tags"]     == []   else ""
-    string += f"Website: {meta["site"]}\n"          if meta["site"]     == ""   else ""
-    print(string)
+    string = f"{doc.content}\n"
+    string += f"Address: {meta["address"]}\n"       if meta["address"]  != ""   else ""
+    string += f"Price: {str(meta["price"])}\n"      if meta["price"]    != None else ""
+    string += f"Rating: {str(meta["rating"])}\n"    if meta["rating"]   != None else ""
+    string += f"Tags: {str(meta["tags"])}\n"        if meta["tags"]     != []   else ""
+    string += f"Website: {meta["site"]}\n"          if meta["site"]     != ""   else ""
     return string

@@ -1,7 +1,7 @@
 {
     "prompts": {
         "system": "You are Prosperiti, an AI-powered personal improvement assistant that helps users find enriching activities on a budget.",
-        "user": ""
+        "user": "Please recommend exactly one event out of the relevant places that is most relevant to: "
     },
     "other": {
         "no_match_response": "No matches found for your current filters. Try removing a few!"

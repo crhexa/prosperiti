@@ -40,12 +40,12 @@ async def root():
 
 # /generate/{user_id}
 @app.post("/generate/")
-async def generate(gen_req: Annotated[GenerationRequest, Query()], response: Response):
-    print(str(gen_req))
-    if gen_req.messages[-1].role == "user":
-        return {"response": llm.generate(messages=gen_req.messages, threshold=THRESHOLD)}
-    else:
+async def generate(gen_req: GenerationRequest, response: Response):
+    if len(gen_req.messages) == 0: # or gen_req.messages[-1].role != "user"
         response.status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
+    else:
+        response = await llm.generate(messages=gen_req.messages, filters=gen_req.filters, threshold=THRESHOLD)
+        return {"response": response}
 
 
 app.add_middleware( #allows CORS

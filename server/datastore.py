@@ -1,5 +1,6 @@
 from haystack import Document
 from haystack.document_stores.in_memory import InMemoryDocumentStore
+from haystack.components.embedders import SentenceTransformersDocumentEmbedder
 from data.GmapWrapper import PlaceRetriever
 
 import logging
@@ -21,8 +22,10 @@ class DataPipeline:
     indexEvents  : index queried events at a given location
     getDocuments : return all documents in the document store
     '''
-    def __init__(self, k=10):
+    def __init__(self, model, k=10):
         self.store = InMemoryDocumentStore()
+        self.embed = SentenceTransformersDocumentEmbedder(model=model)
+        self.embed.warm_up()
         self.k = k
 
     def indexPlaces(self, query, location, radius=1000):
@@ -39,7 +42,7 @@ class DataPipeline:
         docs : list[Document]
         '''
         # Reset document store
-        self.store = InMemoryDocumentStore()
+        # self.store = InMemoryDocumentStore()
         places = PlaceRetriever()
         docs = []
         n_docs = 0
@@ -64,8 +67,10 @@ class DataPipeline:
             n_docs += 1
             if n_docs > self.k:
                 break
-        self.store.write_documents(docs)
-        return docs
+
+        if n_docs == 0:
+            return
+        self.store.write_documents(self.embed.run(docs)["documents"])
 
     def indexEvents(self):
         '''Calls the Meetup API to index queried events at a given location as Haystack Documents.
