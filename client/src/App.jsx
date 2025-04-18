@@ -38,7 +38,6 @@ function App() {
       role: newMessage.origin,
       content: newMessage.message
     }].flat();
-    console.log(fullMessageHistory);
 
     try {
       const response = await fetch(AI_POST_ADDRESS, {
@@ -61,11 +60,11 @@ function App() {
       }
 
       setServerResponse(loc_data.response || "No response message.");
-      setMessages((prev) =>  [...prev, {origin: 'server', message: data.response || "No response message."}]);
+      setMessages((prev) =>  [...prev, {origin: 'system', message: data.response || "No response message."}]);
       setLocations(loc_data.locations || []);
     } catch (error) {
       console.error("Fetch error:", error);
-      setMessages((prev) =>  [...prev, {origin: 'server', message: `Error: ${error.message}`}]);
+      setMessages((prev) =>  [...prev, {origin: 'system', message: `Error: ${error.message}`}]);
       setLocations([]);
     }
   };
