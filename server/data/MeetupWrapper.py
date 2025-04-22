@@ -56,8 +56,6 @@ class EventRetriever:
 
             events = data['data']['eventSearch']['edges']
 
-            print(f"API returned {len(events)} events")
-
             return [event['node'] for event in events[:limit]]
         
         except Exception as e:
