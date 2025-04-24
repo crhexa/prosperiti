@@ -2,6 +2,7 @@ from haystack import Document
 from haystack.document_stores.in_memory import InMemoryDocumentStore
 from haystack.components.embedders import SentenceTransformersDocumentEmbedder
 from data.GmapWrapper import PlaceRetriever
+from data.MeetupWrapper import EventRetriever
 
 import logging
 
@@ -46,12 +47,12 @@ class DataPipeline:
         places = PlaceRetriever()
         docs = []
         n_docs = 0
-        for place in places.getPlaces(query, location, radius):
+        for place in places.getPlaces(query, location):
             loc = place["geometry"]["location"]
             name = place.get("name", "")
             address = place.get("formatted_address", "")
-            price_level = place.get("price_level", None)
-            rating = place.get("rating", None)
+            price_level = place.get("price_level", 0)
+            rating = place.get("rating", 0)
             tags = place.get("types", [])
             site = place.get("website", "")
             doc = Document(content=name, meta={
@@ -70,9 +71,11 @@ class DataPipeline:
 
         if n_docs == 0:
             return
-        self.store.write_documents(self.embed.run(docs)["documents"])
 
-    def indexEvents(self):
+        self.store.write_documents(self.embed.run(docs)["documents"])
+        return docs
+
+    def indexEvents(self, query, location):
         '''Calls the Meetup API to index queried events at a given location as Haystack Documents.
 
         Params:
@@ -84,9 +87,39 @@ class DataPipeline:
         docs : list[Document]
         '''
         # Reset document store
-        self.store = InMemoryDocumentStore()
+        # self.store = InMemoryDocumentStore()
+        events = EventRetriever()
         docs = []
-        # TODO
+        ndocs = 0
+
+        for event in events.getEvents(query, location['lat'], location['lng']):
+            name = event.get("title", "")
+            desc = event.get("description", "")
+            date = event.get("dateTime", "")
+            try:
+                group = event['group']['name']
+            except KeyError:
+                group = ""
+            url = event.get("eventUrl", "")
+
+            doc = Document(content=desc, meta={
+                "name": name,
+                "location": location,
+                "group": group,
+                "date": date,
+                "desc": desc,
+                "site": url,
+            })
+
+            docs.append(doc)
+            ndocs += 1
+            if ndocs > self.k:
+                break
+
+        if not ndocs:
+            return
+
+        self.store.write_documents(self.embed.run(docs)["documents"])
         return docs
 
     def getDocuments(self):
@@ -103,7 +136,7 @@ class DataPipeline:
         return self.store.filter_documents(filters={})
 
 if __name__ == "__main__":
-    dataPipe = DataPipeline()
+    dataPipe = DataPipeline("all-MiniLM-L6-v2")
     loc = {
         "lat": -70.0,
         "lng": 400.0
