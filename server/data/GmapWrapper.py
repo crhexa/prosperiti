@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 class PlaceRetriever:
     def __init__(self):
         load_dotenv()
-        self.gmapsClient = googlemaps.Client(key=os.environ['GMAP_KEY'])
+        self.gmapsClient = googlemaps.Client(key=os.environ['GMAP_API_TOKEN'])
 
     def getPlaces(self, query, location, radius=1000):
         try:

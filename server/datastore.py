@@ -138,9 +138,9 @@ class DataPipeline:
 if __name__ == "__main__":
     dataPipe = DataPipeline("all-MiniLM-L6-v2")
     loc = {
-        "lat": -70.0,
-        "lng": 400.0
+        "lat": 40.7218,
+        "lng": -74.0060
     }
-    dataPipe.indexPlaces("italian restaurants", loc)
+    dataPipe.indexEvents("sports", loc)
     results = dataPipe.getDocuments()
     print(results)
