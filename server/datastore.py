@@ -70,10 +70,10 @@ class DataPipeline:
                 break
 
         if n_docs == 0:
-            return
+            return 0
 
         self.store.write_documents(self.embed.run(docs)["documents"])
-        return docs
+        return n_docs
 
     def indexEvents(self, query, location):
         '''Calls the Meetup API to index queried events at a given location as Haystack Documents.
@@ -120,7 +120,7 @@ class DataPipeline:
             return
 
         self.store.write_documents(self.embed.run(docs)["documents"])
-        return docs
+        return ndocs
 
     def getDocuments(self):
         '''Returns all documents currently in the InMemoryDocumentStore
