@@ -9,8 +9,10 @@
 
 ## Setup
 
-Create a `.env` file and set `GMAP_KEY` to a valid Google Maps API key.
+1. Create a `.env` file
+2. In the `.env` file, set `GMAP_API_TOKEN` to a valid Google Maps API key.
+3. In the `.env` file, set `MEETUP_API_TOKEN` to a valid Meetup API key.
+4. In the `.env` file, set `OPENAI_API_KEY` to a valid OpenAI key.
 
 ## Start Server
-Set `OPENAI_API_KEY` in environment variables.
 Run `fastapi dev .\server\main.py`
