@@ -29,14 +29,13 @@ class DataPipeline:
         self.embed.warm_up()
         self.k = k
 
-    def indexPlaces(self, query, location, radius=1000):
+    def indexPlaces(self, query, location):
         '''Calls the Google Places API to index queried places at a given location as Haystack Documents.
 
         Params:
         -------
         query    : str
         location : dict[str, float]
-        radius   : int (default 1000)
 
         Return:
         -------
@@ -80,7 +79,8 @@ class DataPipeline:
 
         Params:
         -------
-        TODO
+        query    : str
+        location : dict[str, float]
 
         Return:
         -------
