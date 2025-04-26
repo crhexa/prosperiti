@@ -9,7 +9,7 @@
 
 ## Setup
 
-1. Create a `.env` file
+1. Create a `.env` file in the server directory: `/server/.env/`
 2. In the `.env` file, set `GMAP_API_TOKEN` to a valid Google Maps API key.
 3. In the `.env` file, set `MEETUP_API_TOKEN` to a valid Meetup API key.
 4. In the `.env` file, set `OPENAI_API_KEY` to a valid OpenAI key.

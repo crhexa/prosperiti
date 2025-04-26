@@ -1,13 +1,12 @@
-from typing import Annotated
-from fastapi import FastAPI, Query, Request, Response, status
+from fastapi import FastAPI, Request, Response, status
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field
+from dotenv import load_dotenv
 
 import os, json, time
 import http, logging
 import pipeline
-from pydtypes import Message, GenerationRequest
+from pydtypes import GenerationRequest
 
 script_path = os.path.dirname(os.path.abspath(__file__))
 favicon_path = os.path.join(script_path, "favicon.ico")
@@ -29,6 +28,7 @@ uvicorn_access.disabled = True
 logger = logging.getLogger("uvicorn")
 logger.setLevel(logging.getLevelName(logging.DEBUG))
 
+load_dotenv()
 app = FastAPI()
 llm = pipeline.GenerationPipeline(MODEL_NAME, EMBED_NAME, TOP_K, config_text)
 
@@ -44,8 +44,9 @@ async def generate(gen_req: GenerationRequest, response: Response):
     if len(gen_req.messages) == 0: # or gen_req.messages[-1].role != "user"
         response.status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
     else:
-        response = await llm.generate(messages=gen_req.messages, filters=gen_req.filters, threshold=THRESHOLD)
-        return {"response": response}
+        (reply, retrieved, created) = await llm.generate(messages=gen_req.messages, filters=gen_req.filters, threshold=THRESHOLD)
+        logger.info(f"generate(): {retrieved} docs retrieved, {created} docs created.")
+        return {"response": reply}
 
 
 app.add_middleware( #allows CORS

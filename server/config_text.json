@@ -4,6 +4,6 @@
         "user": "Please recommend exactly one event out of the relevant places that is most relevant to: "
     },
     "other": {
-        "no_match_response": "No matches found for your current filters. Try removing a few!"
+        "no_match_response": "No matches found for your current filters."
     }
 }

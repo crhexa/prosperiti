@@ -4,7 +4,6 @@ from haystack.components.embedders import SentenceTransformersDocumentEmbedder
 from data.GmapWrapper import PlaceRetriever
 from data.MeetupWrapper import EventRetriever
 
-import logging
 
 # ------------------- Retrieval Class ------------------- #
 
@@ -25,7 +24,7 @@ class DataPipeline:
     '''
     def __init__(self, model, k=10):
         self.store = InMemoryDocumentStore()
-        self.embed = SentenceTransformersDocumentEmbedder(model=model)
+        self.embed = SentenceTransformersDocumentEmbedder(model=model, progress_bar=False)
         self.embed.warm_up()
         self.k = k
 
@@ -55,6 +54,7 @@ class DataPipeline:
             tags = place.get("types", [])
             site = place.get("website", "")
             doc = Document(content=name, meta={
+                "type": 0,
                 "location": loc,
                 "name": name,
                 "address": address,
@@ -103,6 +103,7 @@ class DataPipeline:
             url = event.get("eventUrl", "")
 
             doc = Document(content=desc, meta={
+                "type": 1,
                 "name": name,
                 "location": location,
                 "group": group,
