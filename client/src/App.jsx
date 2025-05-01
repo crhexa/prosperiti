@@ -14,6 +14,7 @@ function App() {
   const [darkMode, setDarkMode] = useState(true);
   const [locations, setLocations] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const mapRef = useRef(null);
   const markersRef = useRef([]);
@@ -26,6 +27,7 @@ function App() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setLoading(true);
     setMessages((prev) => [...prev, {origin: 'user', message: `I'm looking for ${userInput.trim()} on a budget of ${budget} within ${searchArea}km of ${userAddress.trim()}`}])
     
     try {
@@ -55,6 +57,8 @@ function App() {
       console.error("Fetch error:", error);
       setMessages((prev) =>  [...prev, {origin: 'system', message: `Error: ${error.message}`}]);
       setLocations([]);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -253,6 +257,15 @@ function App() {
             >
               Search
             </button>
+
+            {loading && (
+              <div className="flex justify-center mt-4">
+                <svg className="animate-spin h-6 w-6 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+              </div>
+            )}
           </form>
 
           {serverResponse && (
