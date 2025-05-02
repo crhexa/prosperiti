@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -e
 LOG_DIR_PIP="./pip.log"
 PY_VENV="prosperiti"
 ALT_TMP="./tmp-pip"
