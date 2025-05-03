@@ -1,6 +1,5 @@
 #!/bin/bash
 set -e
-PID_LOG="./pidlog"
 PDIR="/home/ec2-user/prosperiti/"
 
 if [[ "$1" != "--restart" ]]; then
@@ -20,21 +19,15 @@ fi
 cd "$PDIR"
 source server/prosperiti/bin/activate
 
-if [ ! -f "$PID_LOG" ]; then
-    touch "$PID_LOG"
-    chmod 644 "$PID_LOG"
+if [ ! -f "$PDIR/pidlog" ]; then
+    touch "$PDIR/pidlog"
+    chmod 644 "$PDIR/pidlog"
 fi
-nohup dotenv run -- fastapi run server/main.py > server.log 2>&1 & disown
-PID=$!
-cat <<EOF >> "$PID_LOG"
-server $PID
-EOF
+nohup dotenv run -- fastapi run server/main.py > server.log 2>&1 &
+echo "server $!" >> "$PDIR/$PID_LOG"
 
 dotenv run -- sudo sed -i "0,/key=/s//key=${GMAP_API_TOKEN}/" client/index.html
-cd client
+cd "$PDIR/client"
 nohup npm run dev > ../client.log 2>&1 &
-PID=$!
-cat <<EOF >> "$PID_LOG"
-client $PID
-EOF
-wait
+echo "client $!" >> "$PDIR/pidlog"
+disown
