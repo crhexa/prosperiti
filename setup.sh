@@ -1,22 +1,23 @@
 #!/bin/bash
 set -e
 PID_LOG="./pidlog"
+PDIR="/home/ec2-user/prosperiti/"
 
 if [[ "$1" != "--restart" ]]; then
     sudo dnf install -y nodejs
     sudo dnf install -y python3.12
-    cd client
+    cd "$PDIR/client"
     sudo npm cache clean -f
     sudo npm install -g n
     sudo n stable
     hash -r
     npm install
+    cd "$PDIR/server"
+    sudo chmod +x install.sh
+    ./install.sh
 fi
 
-cd /home/ec2-user/prosperiti/server
-sudo chmod +x install.sh
-./install.sh
-cd /home/ec2-user/prosperiti
+cd "$PDIR"
 source server/prosperiti/bin/activate
 
 if [ ! -f "$PID_LOG" ]; then
