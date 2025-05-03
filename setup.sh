@@ -26,7 +26,7 @@ fi
 nohup dotenv run -- fastapi run server/main.py > server.log 2>&1 &
 echo "server $!" >> "$PDIR/$PID_LOG"
 
-dotenv run -- sudo sed -i "0,/key=/s//key=${GMAP_API_TOKEN}/" client/index.html
+dotenv run -- sudo sed -i "0,/key=.*\&/s//key=${GMAP_API_TOKEN}\&/" client/index.html
 cd "$PDIR/client"
 nohup npm run dev > ../client.log 2>&1 &
 echo "client $!" >> "$PDIR/pidlog"
