@@ -29,12 +29,13 @@ PID=$!
 cat <<EOF >> "$PID_LOG"
 server $PID
 EOF
+disown
 
 dotenv run -- sudo sed -i "0,/key=/s//key=${GMAP_API_TOKEN}/" client/index.html
 cd client
-nohup npm run dev > ../client.log 2>&1 & disown
+nohup npm run dev > ../client.log 2>&1 &
 PID=$!
 cat <<EOF >> "$PID_LOG"
 client $PID
 EOF
-wait
+disown
