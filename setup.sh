@@ -16,8 +16,8 @@ fi
 cd /home/ec2-user/prosperiti/server
 sudo chmod +x install.sh
 ./install.sh
+cd /home/ec2-user/prosperiti
 source server/prosperiti/bin/activate
-cd ..
 
 if [ ! -f "$PID_LOG" ]; then
     touch "$PID_LOG"
