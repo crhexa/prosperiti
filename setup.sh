@@ -2,7 +2,7 @@
 set -e
 PID_LOG="./pidlog"
 
-if [[ "$1" != "--restart"]]; then
+if [[ "$1" != "--restart" ]]; then
     sudo dnf install -y nodejs
     sudo dnf install -y python3.12
     cd client
