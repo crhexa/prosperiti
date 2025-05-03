@@ -29,7 +29,6 @@ PID=$!
 cat <<EOF >> "$PID_LOG"
 server $PID
 EOF
-disown
 
 dotenv run -- sudo sed -i "0,/key=/s//key=${GMAP_API_TOKEN}/" client/index.html
 cd client
@@ -38,4 +37,4 @@ PID=$!
 cat <<EOF >> "$PID_LOG"
 client $PID
 EOF
-disown
+wait
