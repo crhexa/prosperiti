@@ -27,22 +27,24 @@ function App() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setLoading(true);
-    setMessages((prev) => [...prev, {origin: 'user', message: `I'm looking for ${userInput.trim()} on a budget of ${budget} within ${searchArea}km of ${userAddress.trim()}`}])
-    
+    setLoading(true);  
+    const userMessage = `I'm looking for ${userInput.trim()} on a budget of ${budget} within ${searchArea}km of ${userAddress.trim()}`;
+    setMessages((prev) => [...prev, { origin: "user", message: userMessage }]);
+    const formattedMessages = [...messages.map(msg => ({
+      role: msg.origin === 'user' ? 'user' : 'system',
+      content: msg.message
+    })), { role: 'user', content: userMessage }];
     try {
       const response = await fetch(AI_POST_ADDRESS, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({messages: [{role: 'user', content: userInput}]}),
-      });
-
+        body: JSON.stringify({messages: formattedMessages}),
+      });      
       const loc_response = await fetch(LOC_POST_ADDRESS, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userInput: userInput.trim(), budget, userAddress: userAddress.trim(), searchArea }),
-      })
-
+      });  
       const data = await response.json();
       const loc_data = await loc_response.json()
 
@@ -50,7 +52,6 @@ function App() {
         throw new Error(data.error || "Server returned an error.");
       }
 
-      setServerResponse(loc_data.response || "No response message.");
       setMessages((prev) =>  [...prev, {origin: 'system', message: data.response || "No response message."}]);
       setLocations(loc_data.locations || []);
     } catch (error) {
@@ -61,6 +62,8 @@ function App() {
       setLoading(false);
     }
   };
+  
+  
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
