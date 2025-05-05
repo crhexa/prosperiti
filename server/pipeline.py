@@ -76,19 +76,19 @@ def stringify_doc(doc: Document):
     meta = doc.meta
     if meta["type"] == 0:   # Place
         string = f"Place Name: {doc.content}\n"
-        string += f"Address: {meta["address"]}\n"           if meta["address"]  != ""   else ""
-        string += f"Price: {price_map(meta["price"])}\n"    if meta["price"]    != None else ""
-        string += f"Rating: {str(meta["rating"])}\n"        if meta["rating"]   != None else ""
-        string += f"Tags: {str(meta["tags"])}\n"            if meta["tags"]     != []   else ""
-        string += f"Website: {meta["site"]}\n"              if meta["site"]     != ""   else ""
+        string += f"Address: {meta['address']}\n"           if meta["address"]  != ""   else ""
+        string += f"Price: {price_map(meta['price'])}\n"    if meta["price"]    != None else ""
+        string += f"Rating: {str(meta['rating'])}\n"        if meta["rating"]   != None else ""
+        string += f"Tags: {str(meta['tags'])}\n"            if meta["tags"]     != []   else ""
+        string += f"Website: {meta['site']}\n"              if meta["site"]     != ""   else ""
         return string
 
     else:                   # Event
-        string = f"Event Name: {meta["name"]}\n"            if meta["name"]     != ""   else ""
+        string = f"Event Name: {meta['name']}\n"            if meta["name"]     != ""   else ""
         string += f"Event Description: {doc.content}\n"
-        string += f"Group: {meta["group"]}\n"               if meta["group"]    != ""   else ""
-        string += f"Date: {meta["date"]}\n"                 if meta["date"]     != ""   else ""
-        string += f"Website: {meta["site"]}\n"              if meta["site"]     != ""   else ""
+        string += f"Group: {meta['group']}\n"               if meta["group"]    != ""   else ""
+        string += f"Date: {meta['date']}\n"                 if meta["date"]     != ""   else ""
+        string += f"Website: {meta['site']}\n"              if meta["site"]     != ""   else ""
 
 
 def price_map(price : int) -> str:
