@@ -11,7 +11,6 @@ function App() {
   const [searchArea, setSearchArea] = useState(10);
   const [serverResponse, setServerResponse] = useState("");
   const [messages, setMessages] = useState([]);
-  const [darkMode, setDarkMode] = useState(true);
   const [locations, setLocations] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -61,13 +60,6 @@ function App() {
     } finally {
       setLoading(false);
     }
-  };
-  
-  
-
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-    document.body.classList.toggle("dark-mode", darkMode);
   };
 
   useEffect(() => {
