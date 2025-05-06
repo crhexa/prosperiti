@@ -76,7 +76,8 @@ function App() {
 
   useEffect(() => {
     if (!window.google || !window.google.maps || !addressInputRef.current) return;
-  
+
+    const input = addressInputRef.current;  
     const autocomplete = new window.google.maps.places.Autocomplete(addressInputRef.current, {
       types: ['geocode'],
       componentRestrictions: { country: 'us' },
@@ -90,7 +91,18 @@ function App() {
         setUserAddress(place.name);
       }
     });
-    console.log("Autocomplete initialized:", addressInputRef.current);
+    const handleKeyDown = (e) => {
+      if (e.key === 'Enter') {
+        const suggestionSelected = document.querySelector('.pac-item-selected');
+        if (suggestionSelected) {
+          e.preventDefault();
+        }
+      }
+    };  
+    input.addEventListener('keydown', handleKeyDown);  
+    return () => {
+      input.removeEventListener('keydown', handleKeyDown);
+    };
   }, []);
   
 
