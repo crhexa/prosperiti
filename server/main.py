@@ -44,14 +44,18 @@ async def generate(gen_req: GenerationRequest, response: Response):
     if len(gen_req.messages) == 0: # or gen_req.messages[-1].role != "user"
         response.status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
     else:
-        (reply, retrieved, created) = await llm.generate(messages=gen_req.messages, filters=gen_req.filters, threshold=THRESHOLD)
+        try:
+            (reply, retrieved, created) = await llm.generate(messages=gen_req.messages, filters=gen_req.filters, threshold=THRESHOLD)
+        except Exception as e:
+            logger.error(f"Error in /generate/: {e}")
+            response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+            return {"error": "Internal server error"}
         logger.info(f"generate(): {retrieved} docs retrieved, {created} docs created.")
         return {"response": reply}
 
-
 app.add_middleware( #allows CORS
     CORSMiddleware,
-    allow_origins=["*"],  # replace with frontend domain
+    allow_origins=["*"], 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
