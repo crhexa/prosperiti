@@ -1,6 +1,8 @@
 from haystack import Document
 from haystack.document_stores.in_memory import InMemoryDocumentStore
 from haystack.components.embedders import SentenceTransformersDocumentEmbedder
+from haystack.components.writers import DocumentWriter
+from haystack.document_stores.types import DuplicatePolicy
 from data.GmapWrapper import PlaceRetriever
 from data.MeetupWrapper import EventRetriever
 
@@ -24,6 +26,7 @@ class DataPipeline:
     '''
     def __init__(self, model, k=10):
         self.store = InMemoryDocumentStore()
+        self.writer = DocumentWriter(document_store=self.store, policy=DuplicatePolicy.SKIP)
         self.embed = SentenceTransformersDocumentEmbedder(model=model, progress_bar=False)
         self.embed.warm_up()
         self.k = k
@@ -71,7 +74,8 @@ class DataPipeline:
         if n_docs == 0:
             return 0
 
-        self.store.write_documents(self.embed.run(docs)["documents"])
+        # self.store.write_documents(self.embed.run(docs)["documents"])
+        self.writer.run(self.embed.run(docs)["documents"])
         return n_docs
 
     def indexEvents(self, query, location):
@@ -120,7 +124,8 @@ class DataPipeline:
         if not ndocs:
             return
 
-        self.store.write_documents(self.embed.run(docs)["documents"])
+        # self.store.write_documents(self.embed.run(docs)["documents"])
+        self.writer.run(self.embed.run(docs)["documents"])
         return ndocs
 
     def getDocuments(self):
