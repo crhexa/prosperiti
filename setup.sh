@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-PDIR="/home/ec2-user/prosperiti/"
+PDIR="/home/ec2-user/prosperiti"
 
 if [[ "$1" != "--restart" ]]; then
     sudo dnf install -y nodejs
