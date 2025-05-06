@@ -12,7 +12,6 @@ if [[ "$1" != "--restart" ]]; then
     hash -r
     npm install
     cd "$PDIR/server"
-    sudo chmod +x install.sh
     ./install.sh
 fi
 
