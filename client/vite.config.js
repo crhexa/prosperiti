@@ -8,7 +8,6 @@ export default defineConfig({
   plugins: [react(), tailwindcss(), flowbiteReact()],
   server: {
     host: '0.0.0.0',
-    port: 80,
     allowedHosts: ['prosperiti.info']
   }
 })
