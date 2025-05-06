@@ -10,7 +10,7 @@ export default function Chatbox({messages}){
     }, [messages]);
 
     return (
-        <div className="border rounded-lg p-4 w-full max-w-3xl min-h-[600px] max-h-[600px] m-5 ml-0 overflow-y-auto bg-gray-50 dark:bg-gray-900 dark:text-white shadow-lg space-y-3">
+        <div className="border rounded-lg p-4 w-full max-w-3xl min-h-[500px] max-h-[600px] m-5 ml-0 overflow-y-auto bg-gray-50 dark:bg-gray-900 dark:text-white shadow-lg space-y-3">
             {messages.map((msg, i) => (
         <div
           key={i}

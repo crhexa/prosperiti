@@ -33,6 +33,7 @@ function App() {
       role: msg.origin === 'user' ? 'user' : 'system',
       content: msg.message
     })), { role: 'user', content: userMessage }];
+
     try {
       const response = await fetch(AI_POST_ADDRESS, {
         method: "POST",
@@ -246,10 +247,7 @@ function App() {
               className="w-full"
             />
 
-            <button
-              type="submit"
-              className="w-full bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600 transition font-semibold"
-            >
+            <button type="submit" className="w-full bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-800 transition font-semibold">
               Search
             </button>
 
@@ -278,8 +276,8 @@ function App() {
       </div>
 
       {locations.length > 0 && (
-        <div className="flex justify-center items-center flex-col lg:flex-row w-full max-w-screen px-100 pb-10 gap-6 space-y-6">
-          <div className="w-full lg:w-1/3 space-y-4">
+        <div className="flex justify-center items-center flex-col lg:flex-row px-6 pb-10 gap-6 w-full">
+          <div className="lg:w-1/3 w-full space-y-4">
             {locations.map((location, index) => (
               <div
                 key={index}
@@ -298,7 +296,7 @@ function App() {
             ))}
           </div>
 
-          <div className="w-full lg:w-2/3 h-[500px]">
+          <div className="w-full lg:w-2/3 h-[500px] flex-grow">
             <div id="map" className="w-full h-full rounded-lg shadow-lg" />
           </div>
         </div>
