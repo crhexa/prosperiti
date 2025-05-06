@@ -219,16 +219,29 @@ function App() {
               className="w-full p-3 rounded-lg border bg-gray-100 dark:bg-gray-700"
             />
 
-            <label htmlFor="budget" className="font-medium text-gray-700 dark:text-gray-300">
-              <i>On a budget of:</i>
+            <label className="font-medium text-gray-700 dark:text-gray-300">
+              <i>Choose your budget:</i>
             </label>
-            <input
-              type="number"
-              id="budget"
-              value={budget === 0 ? "" : budget}
-              onChange={(e) => setBudget(Number(e.target.value))}
-              className="w-full p-3 rounded-lg border bg-gray-100 dark:bg-gray-700"
-            />
+            <div className="flex justify-between gap-2">
+              {["$", "$$", "$$$", "$$$$"].map((label, idx) => {
+                const value = idx + 1;
+                const isSelected = budget === value;
+                return (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => setBudget(value)}
+                    className={`flex-1 p-2 rounded-lg font-semibold border transition-colors duration-200 ${
+                      isSelected
+                        ? "bg-blue-500 text-white border-blue-700"
+                        : "bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600"
+                    }`}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
 
             <label htmlFor="address" className="font-medium text-gray-700 dark:text-gray-300">
               <i>Insert address or zip code:</i>
