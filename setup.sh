@@ -23,7 +23,7 @@ if [ ! -f "$PDIR/pidlog" ]; then
     chmod 644 "$PDIR/pidlog"
 fi
 nohup dotenv run -- fastapi run server/main.py > server.log 2>&1 &
-echo "server $!" >> "$PDIR/$PID_LOG"
+echo "server $!" >> "$PDIR/pidlog"
 
 dotenv run -- sudo sed -i "0,/key=.*\&/s//key=${GMAP_API_TOKEN}\&/" client/index.html
 cd "$PDIR/client"
