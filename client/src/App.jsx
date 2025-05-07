@@ -27,7 +27,8 @@ function App() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     setLoading(true);  
-    const userMessage = `I'm looking for ${userInput.trim()} on a budget of ${budget} within ${searchArea}km of ${userAddress.trim()}`;
+    const budget2 = ["Free","Inexpensive","Moderately Expensive","Expensive","Very Expensive"][budget];
+    const userMessage = `I'm looking for ${userInput.trim()} in a ${budget2} price range, within ${searchArea}km of ${userAddress.trim()}`;
     setMessages((prev) => [...prev, { origin: "user", message: userMessage }]);
     const formattedMessages = [...messages.map(msg => ({
       role: msg.origin === 'user' ? 'user' : 'system',
