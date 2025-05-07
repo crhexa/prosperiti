@@ -3,12 +3,10 @@ set -e
 PDIR="/home/ec2-user/prosperiti"
 
 if [[ "$1" != "--restart" ]]; then
-    sudo dnf install -y nftables
+    sudo dnf install -y nginx
     sudo dnf install -y nodejs
     sudo dnf install -y python3.12
-    sudo nft add table nat
-    sudo nft add chain nat prerouting { type nat hook prerouting priority 0 \; }
-    sudo nft add rule nat prerouting tcp dport 80 redirect to 5173
+    sudo dnf install -y certbot python3-certbot-nginx
     cd "$PDIR/client"
     sudo npm cache clean -f
     sudo npm install -g n
