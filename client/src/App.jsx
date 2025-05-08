@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import Chatbox from "./Chatbox.jsx"
 
-const LOC_POST_ADDRESS = 'http://prosperiti.info:3000/api/process-input'
-const AI_POST_ADDRESS = 'http://prosperiti.info:8000/generate/'
+const LOC_POST_ADDRESS = 'https://prosperiti.info/api/process-input/'
+const AI_POST_ADDRESS = 'https://prosperiti.info/generate/'
 
 function App() {
   const [userInput, setUserInput] = useState("");

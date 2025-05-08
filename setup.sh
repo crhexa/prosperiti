@@ -7,8 +7,8 @@ if [[ "$1" != "--restart" ]]; then
     sudo dnf install -y nodejs
     sudo dnf install -y python3.12
     sudo dnf install -y certbot python3-certbot-nginx
-    sudo cp nginx.conf /etc/nginx/conf.d/prosperiti.conf
-    sudo certbot --register-unsafely-without-email --nginx -d prosperiti.info -d www.prosperiti.info
+    sudo cp prosperiti.conf /etc/nginx/conf.d/prosperiti.conf
+    sudo certbot --register-unsafely-without-email --non-interactive --agree-tos --nginx -d prosperiti.info -d www.prosperiti.info
     cd "$PDIR/client"
     sudo npm cache clean -f
     sudo npm install -g n

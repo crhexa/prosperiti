@@ -12,4 +12,4 @@ cd prosperiti
 ```
 
 ## Restart
-Assuming the install is successful, run `./setup.sh` on the remote machine in the `prosperiti` directory. 
+Assuming the install is successful, run `./setup.sh` on the remote machine in the `prosperiti` directory. Kill any running processes listed in `prosperiti/pidlog`
