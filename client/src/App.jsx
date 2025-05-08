@@ -39,13 +39,13 @@ function App() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({messages: formattedMessages}),
-      });      
+      });
+      const data = await response.json();
       const loc_response = await fetch(LOC_POST_ADDRESS, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userInput: userInput.trim(), budget, userAddress: userAddress.trim(), searchArea }),
-      });  
-      const data = await response.json();
+        body: JSON.stringify({ userInput: userInput.trim(), budget, userAddress: userAddress.trim(), searchArea, data }),
+      });
       const loc_data = await loc_response.json()
 
       if (!response.ok) {
@@ -317,7 +317,7 @@ function App() {
                 onClick={() => highlightMarker(index)}
               >
                 <h3 className="text-lg font-semibold">{location.name}</h3>
-                <h3 className="text-lg font-semibold">${location.price}/mo</h3>
+                <h3 className="text-lg font-semibold">{location.price}</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-300">{location.description}</p>
                 <p className="text-sm text-gray-600 dark:text-gray-300">Distance: {location.distance} km</p>
               </div>

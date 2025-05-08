@@ -12,6 +12,8 @@ app.use(express.static('build'));
 
 const API_KEY = process.env.GOOGLE_MAPS_API_KEY;
 
+let currLocations = [];
+
 function getDistanceInKm(lat1, lng1, lat2, lng2) {
   const toRad = (value) => (value * Math.PI) / 180;
   const R = 6371;
@@ -26,46 +28,48 @@ function getDistanceInKm(lat1, lng1, lat2, lng2) {
 }
 
 app.post("/api/process-input", async (req, res) => {
-  const { userInput, budget, userAddress, searchArea } = req.body;
-
+  const { userInput, budget, userAddress, searchArea, data } = req.body;
+  const budget2 = ["Free","$","$$","$$$","$$$$"][budget];
   if (!userInput || !budget || !userAddress || !searchArea) {
     return res.status(400).json({
       error: "Missing required fields: userInput, budget, userAddress, or searchArea.",
     });
   }
-
-  const defaultLocations = [
-    {
-      name: "Planet Fitness, Hoboken, NJ",
-      description: "24/7 access gym that easily fits your budget",
-      price: 15.00
-    },
-    {
-      name: "Crunch Fitness, Hoboken, NJ",
-      description: "More premium gym option stretching your budget a bit more",
-      price: 93.75
-    },
-    {
-      name: "Fitness Factory, Hoboken, NJ",
-      description: "A mid-range gym option",
-      price: 59.99
-    },
-  ];
-
+  console.log("regex time...")
+  const addressRegex = /\b\d{1,6}\s(?:[A-Za-z0-9.,'-]+\s){0,6}[A-Za-z0-9.,'-]+(?:,\s*| in\s+)[A-Za-z\s]+,\s*[A-Z]{2}(?:\s*\d{5}(?:-\d{4})?)?\b/;
+  let address = "";
+  let isMatch = false;
+  const match = data.response.match(addressRegex);
+  if (match) {
+    address = match[0];
+    isMatch = true;
+    console.log("Address found:", address);
+  } else {
+    console.log("No address found.");
+  }
   try {
     const geoRes = await axios.get("https://maps.googleapis.com/maps/api/geocode/json", {
       params: { address: userAddress, key: API_KEY },
     });
-
     if (geoRes.data.status !== "OK" || geoRes.data.results.length === 0) {
       return res.status(400).json({ error: "Invalid user address. Please check and try again." });
     }
-
     const userCoords = geoRes.data.results[0].geometry.location;
-
     const locations = [];
-
-    for (const loc of defaultLocations) {
+    if(isMatch){
+      const geoResp = await axios.get("https://maps.googleapis.com/maps/api/geocode/json", {
+        params: { address: address, key: API_KEY },
+      });
+      const newLocation = {
+        name: geoResp.data.results[0].formatted_address,
+        description: `For your search of ${userInput}`,
+        price: `${budget2}`
+      };
+      if(!(currLocations.some((obj) => obj.name === newLocation.name))){
+        currLocations.push(newLocation);
+      }
+    }
+    for (const loc of currLocations) {
       const geoResp = await axios.get("https://maps.googleapis.com/maps/api/geocode/json", {
         params: { address: loc.name, key: API_KEY },
       });
