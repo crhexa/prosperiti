@@ -7,6 +7,10 @@ if [[ "$1" != "--restart" ]]; then
     sudo dnf install -y nodejs
     sudo dnf install -y python3.12
     sudo dnf install -y certbot python3-certbot-nginx
+    sudo certbot --register-unsafely-without-email --nginx -d prosperiti.info -d www.prosperiti.info
+    sudo ln -s /etc/nginx/sites-available/prosperiti.info /etc/nginx/sites-enabled/
+    sudo nginx -t 
+    sudo systemctl reload nginx
     cd "$PDIR/client"
     sudo npm cache clean -f
     sudo npm install -g n
@@ -26,6 +30,7 @@ if [ ! -f "$PDIR/pidlog" ]; then
     touch "$PDIR/pidlog"
     chmod 644 "$PDIR/pidlog"
 fi
+echo "$(date +"%Y-%m-%d %H:%M:%S")" >> "$PDIR/pidlog"
 nohup dotenv run -- fastapi run server/main.py > server.log 2>&1 &
 echo "server $!" >> "$PDIR/pidlog"
 
