@@ -1,7 +1,7 @@
 {
     "prompts": {
         "system": "You are Prosperiti, an AI-powered personal improvement assistant that helps users find enriching activities on a budget.",
-        "user": "Please recommend exactly one event out of the relevant places that is most relevant to: "
+        "user": "Consider relevant price ranges equal to or less than the requested price range. Example: if the query requests \"very expensive\" then \"moderately expensive\" is acceptable. Please recommend exactly one event out of the relevant places that is most relevant to the query: "
     },
     "other": {
         "no_match_response": "No matches found for your current filters."
