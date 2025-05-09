@@ -1,35 +1,23 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-//import { useRouter } from 'next/router';
-//import { useUser } from '@/context/UserContext';
+import { Link, useNavigate } from 'react-router-dom';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from './firebase.ts';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
-  //const { setUser } = useUser();
-  //const router = useRouter();
+  const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (!response.ok) {
-        const { message } = await response.json();
-        setError(message || 'Login failed.');
-        return;
-      }
-
-      const data = await response.json();
-    } catch (err) {
-      setError('Something went wrong. Please try again.');
-      console.log(err);
+      await signInWithEmailAndPassword(auth, email, password);
+      console.log('Login successful');
+      navigate('/chat'); 
+    } catch (err: any) {
+      setError(err.message || 'Login failed.');
     }
   };
 
@@ -37,7 +25,6 @@ export default function Login() {
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <form className="bg-white p-6 rounded shadow-md" onSubmit={handleLogin}>
         <h1 className="text-2xl font-bold mb-4">Login</h1>
-        {error && <p className="text-red-500">{error}</p>}
         <input
           type="email"
           placeholder="Email"
@@ -57,6 +44,7 @@ export default function Login() {
         <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded mb-4">
           Login
         </button>
+        {error && <p className="text-red-500">{error}</p>}
 
         <p className="text-center">
           Don’t have an account?{' '}

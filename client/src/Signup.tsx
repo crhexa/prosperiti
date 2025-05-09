@@ -1,45 +1,34 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-
-const siteKey = import.meta.env.VITE_CAPTCHA_SITE_KEY_DEV;
+import { Link, useNavigate } from 'react-router-dom';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth } from './firebase.ts';
 
 export default function Signup() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
-  //const router = useRouter();
-
+  const navigate = useNavigate();
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-  
+
     // Trim inputs to remove extra spaces
     const trimmedEmail = email.trim();
     const trimmedPassword = password.trim();
-  
+
     if (trimmedPassword !== confirmPassword.trim()) {
       setError('Passwords do not match.');
       return;
     }
-  
+
     try {
-      const response = await fetch('/api/auth/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: trimmedEmail, password: trimmedPassword }),
-      });
-  
-      if (!response.ok) {
-        const { message } = await response.json();
-        setError(message || 'Signup failed.');
-        return;
-      }
-  
-      //router.push('//login'); // Redirect to login on success
-    } catch (err) {
-      setError('An error occurred. Please try again.');
-      console.log(err);
+      // Firebase signup
+      await createUserWithEmailAndPassword(auth, trimmedEmail, trimmedPassword);
+      navigate('/login'); // Redirect to login on success
+    } catch (err: any) {
+      setError(err.message || 'Signup failed.');
+      console.error(err);
     }
   };
 
@@ -71,7 +60,6 @@ export default function Signup() {
           onChange={(e) => setConfirmPassword(e.target.value)}
           required
         />
-        <div className="g-recaptcha mb-5" data-sitekey={siteKey}></div>
         {error && <div className="flex justify-center mb-3 mt-3"><p className="text-red-500">{error}</p></div>}
         <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded">
           Sign Up
@@ -81,7 +69,6 @@ export default function Signup() {
           <Link to="../login" className="text-blue-500 underline">Login</Link>
         </p>
       </form>
-      <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     </div>
   );
 }
