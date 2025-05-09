@@ -38,8 +38,8 @@ export default function Foot() {
             <div>
               <FooterTitle title="Legal" />
               <FooterLinkGroup col>
-                <FooterLink href="#">Privacy Policy</FooterLink>
-                <FooterLink href="#">Terms &amp; Conditions</FooterLink>
+                <FooterLink href="\privacy">Privacy Policy</FooterLink>
+                <FooterLink href="\terms">Terms &amp; Conditions</FooterLink>
               </FooterLinkGroup>
             </div>
           </div>
@@ -51,7 +51,7 @@ export default function Foot() {
             <FooterIcon href="#" icon={BsFacebook} />
             <FooterIcon href="#" icon={BsInstagram} />
             <FooterIcon href="#" icon={BsTwitter} />
-            <FooterIcon href="#" icon={BsGithub} />
+            <FooterIcon href="https://github.com/crhexa/prosperiti" icon={BsGithub} />
             <FooterIcon href="#" icon={BsDribbble} />
           </div>
         </div>

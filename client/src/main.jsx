@@ -9,6 +9,7 @@ import Foot from './Foot.jsx';
 import About from './About.jsx';
 import NavbarDefault from './NavbarDefault.jsx';
 import Contact from './Contact.jsx';
+import NotFound from './NotFound.jsx';
 
 const Root = () => {
   const location = useLocation();
@@ -24,6 +25,7 @@ const Root = () => {
         <Route path="/chat" element={<App />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
       {showFooter && <Foot />}
     </>
