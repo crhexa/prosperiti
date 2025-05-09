@@ -9,7 +9,7 @@ ARG1=$1
 ARG2=$2
 ARG3=$3
 
-OUTPUT_FILE="./.env"
+OUTPUT_FILE="/home/ec2-user/prosperiti/.env"
 
 sudo cat <<EOF >> "$OUTPUT_FILE"
 OPENAI_API_KEY="$ARG1"

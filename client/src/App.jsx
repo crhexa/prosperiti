@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import Chatbox from "./Chatbox.jsx"
 
-const LOC_POST_ADDRESS = 'http://localhost:3000/api/process-input'
-const AI_POST_ADDRESS = 'http://localhost:8000/generate/'
+const LOC_POST_ADDRESS = 'https://prosperiti.info/api/process-input/'
+const AI_POST_ADDRESS = 'https://prosperiti.info/generate/'
 
 function App() {
   const [userInput, setUserInput] = useState("");
@@ -27,7 +27,8 @@ function App() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     setLoading(true);  
-    const userMessage = `I'm looking for ${userInput.trim()} on a budget of ${budget} within ${searchArea}km of ${userAddress.trim()}`;
+    const budget2 = ["Free","Inexpensive","Moderately Expensive","Expensive","Very Expensive"][budget];
+    const userMessage = `I'm looking for ${userInput.trim()} in a ${budget2} price range, within ${searchArea}km of ${userAddress.trim()}`;
     setMessages((prev) => [...prev, { origin: "user", message: userMessage }]);
     const formattedMessages = [...messages.map(msg => ({
       role: msg.origin === 'user' ? 'user' : 'system',
@@ -39,13 +40,13 @@ function App() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({messages: formattedMessages}),
-      });      
+      });
+      const data = await response.json();
       const loc_response = await fetch(LOC_POST_ADDRESS, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userInput: userInput.trim(), budget, userAddress: userAddress.trim(), searchArea }),
-      });  
-      const data = await response.json();
+        body: JSON.stringify({ userInput: userInput.trim(), budget, userAddress: userAddress.trim(), searchArea, data }),
+      });
       const loc_data = await loc_response.json()
 
       if (!response.ok) {
@@ -77,7 +78,8 @@ function App() {
 
   useEffect(() => {
     if (!window.google || !window.google.maps || !addressInputRef.current) return;
-  
+
+    const input = addressInputRef.current;  
     const autocomplete = new window.google.maps.places.Autocomplete(addressInputRef.current, {
       types: ['geocode'],
       componentRestrictions: { country: 'us' },
@@ -91,7 +93,18 @@ function App() {
         setUserAddress(place.name);
       }
     });
-    console.log("Autocomplete initialized:", addressInputRef.current);
+    const handleKeyDown = (e) => {
+      if (e.key === 'Enter') {
+        const suggestionSelected = document.querySelector('.pac-item-selected');
+        if (suggestionSelected) {
+          e.preventDefault();
+        }
+      }
+    };  
+    input.addEventListener('keydown', handleKeyDown);  
+    return () => {
+      input.removeEventListener('keydown', handleKeyDown);
+    };
   }, []);
   
 
@@ -208,16 +221,29 @@ function App() {
               className="w-full p-3 rounded-lg border bg-gray-100 dark:bg-gray-700"
             />
 
-            <label htmlFor="budget" className="font-medium text-gray-700 dark:text-gray-300">
-              <i>On a budget of:</i>
+            <label className="font-medium text-gray-700 dark:text-gray-300">
+              <i>Choose your budget:</i>
             </label>
-            <input
-              type="number"
-              id="budget"
-              value={budget === 0 ? "" : budget}
-              onChange={(e) => setBudget(Number(e.target.value))}
-              className="w-full p-3 rounded-lg border bg-gray-100 dark:bg-gray-700"
-            />
+            <div className="flex justify-between gap-2">
+              {["$", "$$", "$$$", "$$$$"].map((label, idx) => {
+                const value = idx + 1;
+                const isSelected = budget === value;
+                return (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => setBudget(value)}
+                    className={`flex-1 p-2 rounded-lg font-semibold border transition-colors duration-200 ${
+                      isSelected
+                        ? "bg-blue-500 text-white border-blue-700"
+                        : "bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600"
+                    }`}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
 
             <label htmlFor="address" className="font-medium text-gray-700 dark:text-gray-300">
               <i>Insert address or zip code:</i>
@@ -289,7 +315,7 @@ function App() {
                 onClick={() => highlightMarker(index)}
               >
                 <h3 className="text-lg font-semibold">{location.name}</h3>
-                <h3 className="text-lg font-semibold">${location.price}/mo</h3>
+                <h3 className="text-lg font-semibold">{location.price}</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-300">{location.description}</p>
                 <p className="text-sm text-gray-600 dark:text-gray-300">Distance: {location.distance} km</p>
               </div>

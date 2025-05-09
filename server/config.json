@@ -4,5 +4,5 @@
     "embedding_model": "all-MiniLM-L6-v2",
     "embedding_dimension": 384,
     "threshold": 0.5,
-    "top_k": 3
+    "top_k": 1
 }

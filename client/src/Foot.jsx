@@ -1,9 +1,7 @@
-
 "use client";
 
 import {
   Footer,
-  FooterBrand,
   FooterCopyright,
   FooterDivider,
   FooterIcon,
@@ -19,14 +17,10 @@ export default function Foot() {
 
   return (
     <Footer container>
-      <div className="w-full max-w-screen-xl mx-auto px-6">
-        <div className="grid w-full justify-between sm:flex sm:justify-between md:flex md:grid-cols-1">
-          <div>
-            <FooterBrand
-              name="Prosperiti"
-            />
-          </div>
-          <div className="grid grid-cols-2 gap-8 sm:mt-4 sm:grid-cols-3 sm:gap-6">
+      <div className="w-full max-w-screen-xl mx-auto px-6 py-8 flex flex-col items-center text-center">
+        <div className="text-white text-2xl mb-8">Prosperiti</div>
+        <div className="w-full flex justify-center">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-16 text-left">
             <div>
               <FooterTitle title="about" />
               <FooterLinkGroup col>
@@ -50,10 +44,10 @@ export default function Foot() {
             </div>
           </div>
         </div>
-        <FooterDivider />
-        <div className="w-full sm:flex sm:items-center sm:justify-between">
+        <FooterDivider className="my-8 w-full" />
+        <div className="flex flex-col items-center gap-4">
           <FooterCopyright href="#" by="Prosperiti" year={currentYear} />
-          <div className="mt-4 flex space-x-6 sm:mt-0 sm:justify-center">
+          <div className="flex space-x-6">
             <FooterIcon href="#" icon={BsFacebook} />
             <FooterIcon href="#" icon={BsInstagram} />
             <FooterIcon href="#" icon={BsTwitter} />
